@@ -599,20 +599,7 @@
             if (!base) return;
 
             try {
-                // 상태 폴링 — power·brightness만 서버 값으로 갱신 (Claude 명령 반영)
-                // battery·uptimeMinutes는 로컬 시뮬레이션 값 유지
-                const resState = await fetch(`${base}/state`);
-                if (resState.ok) {
-                    const serverState = await resState.json();
-                    if (serverState && Object.keys(serverState).length > 0) {
-                        state.power      = serverState.power;
-                        state.brightness = serverState.brightness;
-                        state.charging   = serverState.charging;
-                        applyStateToUi();
-                    }
-                }
-
-                // 마지막 발화 폴링
+                // last_message만 폴링 — 상태는 UI 조작 시 직접 POST로 저장
                 const resMsg = await fetch(`${base}/last-message`);
                 if (resMsg.ok) {
                     const data = await resMsg.json();
