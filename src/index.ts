@@ -4,7 +4,7 @@ import { z } from "zod";
 
 interface Env {
   MCP_OBJECT: DurableObjectNamespace;
-  MY_KV: KVNamespace;
+  HALO_KV: KVNamespace;
 }
 
 interface LampState {
@@ -28,20 +28,20 @@ export class HaloMCP extends McpAgent {
 
   async init() {
     const getState = async (): Promise<LampState> => {
-      const raw = await (this.env as Env).MY_KV.get("state");
+      const raw = await (this.env as Env).HALO_KV.get("state");
       return raw ? JSON.parse(raw) : { ...DEFAULT_STATE };
     };
 
     const saveState = async (state: LampState) => {
-      await (this.env as Env).MY_KV.put("state", JSON.stringify(state));
+      await (this.env as Env).HALO_KV.put("state", JSON.stringify(state));
     };
 
     const getLastMessage = async (): Promise<string | null> => {
-      return await (this.env as Env).MY_KV.get("last_message");
+      return await (this.env as Env).HALO_KV.get("last_message");
     };
 
     const saveLastMessage = async (message: string) => {
-      await (this.env as Env).MY_KV.put("last_message", message);
+      await (this.env as Env).HALO_KV.put("last_message", message);
     };
 
     // ── 제품 소개 ──────────────────────────────────────────────
@@ -280,7 +280,7 @@ export default {
 
     // 상태 조회 REST 엔드포인트 (halo.html 폴링용)
     if (url.pathname === "/state" && request.method === "GET") {
-      return env.MY_KV.get("state").then(
+      return env.HALO_KV.get("state").then(
         (val) =>
           new Response(val ?? JSON.stringify({
             power: true,
@@ -300,7 +300,7 @@ export default {
     // 상태 저장 REST 엔드포인트 (halo.html UI 조작 시 즉시 반영)
     if (url.pathname === "/state" && request.method === "POST") {
       return request.json().then(async (body: unknown) => {
-        await env.MY_KV.put("state", JSON.stringify(body));
+        await env.HALO_KV.put("state", JSON.stringify(body));
         return new Response(JSON.stringify({ ok: true }), {
           headers: {
             "Content-Type": "application/json",
@@ -312,7 +312,7 @@ export default {
 
     // 마지막 발화 조회 REST 엔드포인트 (halo.html 폴링용)
     if (url.pathname === "/last-message" && request.method === "GET") {
-      return env.MY_KV.get("last_message").then(
+      return env.HALO_KV.get("last_message").then(
         (val) =>
           new Response(JSON.stringify({ message: val ?? null }), {
             headers: {
@@ -326,7 +326,7 @@ export default {
     // 마지막 발화 저장 REST 엔드포인트 (halo.html 시나리오 트리거용)
     if (url.pathname === "/last-message" && request.method === "POST") {
       return request.json().then(async (body: any) => {
-        await env.MY_KV.put("last_message", body.message ?? "");
+        await env.HALO_KV.put("last_message", body.message ?? "");
         return new Response(JSON.stringify({ ok: true }), {
           headers: {
             "Content-Type": "application/json",
