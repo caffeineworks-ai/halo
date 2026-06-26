@@ -149,7 +149,6 @@
     <div class="debug-panel">
         <div class="debug-row">
             <label style="white-space:nowrap;margin:0;font-size:12px;color:#7a8499;">MCP Worker URL</label>
-            <!-- FIX 3: 기본값 빈 문자열 — 더미 URL 제거 -->
             <input type="text" id="workerUrl" value="" placeholder="배포한 MCP 서버 주소 입력 (예: https://halo.xxx.workers.dev)">
             <button class="btn btn-primary" id="togglePoll">폴링 시작</button>
         </div>
@@ -160,11 +159,17 @@
 <script>
     // ── 1. 상태 ──────────────────────────────────────────────
     let state = { power:true, battery:80.0, brightness:40, charging:false, uptimeMinutes:0 };
-    let isUserAdjusting     = false;
-    // FIX 1: 각 발화 이벤트 중복 방지 플래그
+    let isUserAdjusting = false;
+
+    // 중복 발화 방지 플래그
     let chargeCompleteAlerted = false;
     let lowBatteryAlerted     = false;
     let longUptimeAlerted     = false;
+
+    // ★ 핵심 수정: MCP에서 마지막으로 동기화한 시각
+    // 동기화 직후 일정 시간 동안 시뮬레이터의 pushStateToServer()를 억제
+    let lastMcpSyncTime = 0;
+    const MCP_PUSH_GRACE_MS = 8000; // MCP 동기화 후 8초간 push 억제
 
     // ── 2. DOM ───────────────────────────────────────────────
     const elPower       = document.getElementById('power');
@@ -218,12 +223,12 @@
         // 충전 중: 0.5%/s 증가
         if (state.charging && state.battery < 100) {
             state.battery = Math.min(100, state.battery + 0.5);
-            chargeCompleteAlerted = false; // 아직 완료 아님
+            chargeCompleteAlerted = false;
             updateVisuals();
             if (++kvSyncCounter >= 10) { needsPush = true; kvSyncCounter = 0; }
         }
 
-        // FIX 1: 충전 완료 — 플래그로 1회만 발화
+        // 충전 완료 — 1회만 발화
         if (state.charging && state.battery >= 100 && !chargeCompleteAlerted) {
             chargeCompleteAlerted = true;
             state.battery = 100;
@@ -263,7 +268,7 @@
 
     // ── 5. 서버 통신 ────────────────────────────────────────
     async function pushHaloMessage(message) {
-        renderHaloMessage(message); // UI는 항상 즉시 반영
+        renderHaloMessage(message);
         const base = document.getElementById('workerUrl').value.trim().replace(/\/$/,'');
         if (!base) return;
         try {
@@ -275,6 +280,10 @@
     }
 
     async function pushStateToServer() {
+        // ★ MCP 동기화 직후 grace period 동안 push 억제
+        // — 시뮬레이터가 구 state로 서버를 덮어쓰는 것을 방지
+        if (Date.now() - lastMcpSyncTime < MCP_PUSH_GRACE_MS) return;
+
         const base = document.getElementById('workerUrl').value.trim().replace(/\/$/,'');
         if (!base) return;
         try {
@@ -305,12 +314,24 @@
         state.brightness = parseInt(e.target.value);
         elBrightVal.textContent = state.brightness + '%';
         updateVisuals();
-        pushStateToServer();
+        // ★ 사용자가 직접 조작할 때는 grace period 무시하고 즉시 push
+        pushStateToServerForce();
     });
 
-    // FIX 2: mouseup / touchend 로 isUserAdjusting 확실히 해제
     elBrightness.addEventListener('mouseup',  () => { isUserAdjusting = false; });
     elBrightness.addEventListener('touchend', () => { isUserAdjusting = false; });
+
+    // 사용자 직접 조작 시 grace period 무시하고 강제 push
+    async function pushStateToServerForce() {
+        const base = document.getElementById('workerUrl').value.trim().replace(/\/$/,'');
+        if (!base) return;
+        try {
+            await fetch(`${base}/state`, {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify(state)
+            });
+        } catch(e) { console.error('상태 저장 오류:', e); }
+    }
 
     // ── 7. halo 메시지 렌더 ──────────────────────────────────
     function renderHaloMessage(msg) {
@@ -337,18 +358,23 @@
                 const text = await resState.text();
                 if (text && text !== '{}') {
                     const sv = JSON.parse(text);
-                    if (!isUserAdjusting && (
-                        state.power !== sv.power ||
+                    // ★ 변경 감지: 서버와 로컬 state가 다를 때만 반영
+                    const changed =
+                        state.power      !== sv.power      ||
                         state.brightness !== sv.brightness ||
-                        state.charging !== sv.charging
-                    )) {
+                        state.charging   !== sv.charging;
+
+                    if (!isUserAdjusting && changed) {
                         state.power      = sv.power;
                         state.brightness = sv.brightness;
                         state.charging   = sv.charging;
                         if (sv.uptimeMinutes !== undefined) state.uptimeMinutes = sv.uptimeMinutes;
                         if (sv.battery      !== undefined) state.battery       = sv.battery;
-                        // FIX 1: 서버에서 충전 해제되면 완료 플래그도 리셋
                         if (!sv.charging) chargeCompleteAlerted = false;
+
+                        // ★ 동기화 시각 갱신 — 이후 grace period 동안 시뮬레이터 push 억제
+                        lastMcpSyncTime = Date.now();
+
                         applyStateToUi();
                     }
                 }
@@ -385,7 +411,6 @@
     // ── 9. 초기화 ───────────────────────────────────────────
     async function initState() {
         const base = elWorkerUrl.value.trim().replace(/\/$/,'');
-        // FIX 3: URL 없으면 서버 요청 없이 바로 렌더링
         if (!base) { applyStateToUi(); return; }
         try {
             const res = await fetch(`${base}/state`);
@@ -398,6 +423,7 @@
                     state.charging      = sv.charging      ?? false;
                     state.uptimeMinutes = sv.uptimeMinutes ?? 0;
                     state.battery       = sv.battery       ?? 80.0;
+                    lastMcpSyncTime     = Date.now(); // 초기 로드도 grace period 적용
                 }
             }
         } catch(e) { console.warn('초기 상태 로드 실패, 기본값 사용'); }
