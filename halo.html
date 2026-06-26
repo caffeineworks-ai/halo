@@ -5,178 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>halo 가상기기 쇼룸</title>
     <style>
-        :root {
-            --bg-color: #0d0f14;
-            --lamp-color: #B8D4F0;
-            --base-color: #C0392B;
-            --body-color: #7EB5D6;
-            --brightness: 40%;
-        }
-
+        :root { --bg-color: #0d0f14; }
         * { box-sizing: border-box; }
-
         body {
-            margin: 0;
-            padding: 20px;
+            margin: 0; padding: 20px;
             background-color: var(--bg-color);
             color: #e0e0e0;
             font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
-
-        h1 {
-            color: #fff;
-            margin-bottom: 8px;
-            font-weight: 400;
-            letter-spacing: 0.1em;
-            font-size: 22px;
-        }
-
-        .subtitle {
-            color: #7EB5D6;
-            font-size: 12px;
-            letter-spacing: 0.2em;
-            margin-bottom: 24px;
-            text-transform: uppercase;
-        }
-
-        .container {
-            display: flex;
-            width: 1000px;
-            max-width: 100%;
-            background: #13161e;
-            border-radius: 16px;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-            overflow: hidden;
-        }
-
-        .control-panel {
-            width: 45%;
-            padding: 32px;
-            border-right: 1px solid #1e2230;
-        }
-
-        .halo-message-box {
-            background: linear-gradient(135deg, #0d1520, #131a28);
-            border: 1px solid #2a3a52;
-            border-left: 3px solid #7EB5D6;
-            border-radius: 8px;
-            padding: 14px 16px;
-            margin-bottom: 24px;
-            min-height: 52px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        h1 { color: #fff; margin-bottom: 8px; font-weight: 400; letter-spacing: 0.1em; font-size: 22px; }
+        .subtitle { color: #7EB5D6; font-size: 12px; letter-spacing: 0.2em; margin-bottom: 24px; text-transform: uppercase; }
+        .container { display: flex; width: 1000px; max-width: 100%; background: #13161e; border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.6); overflow: hidden; }
+        .control-panel { width: 45%; padding: 32px; border-right: 1px solid #1e2230; }
+        .halo-message-box { background: linear-gradient(135deg,#0d1520,#131a28); border: 1px solid #2a3a52; border-left: 3px solid #7EB5D6; border-radius: 8px; padding: 14px 16px; margin-bottom: 24px; min-height: 52px; display: flex; align-items: center; gap: 10px; }
         .halo-message-icon { font-size: 18px; flex-shrink: 0; }
         .halo-message-text { font-size: 14px; color: #B8D4F0; line-height: 1.5; font-style: italic; }
         .halo-message-text.empty { color: #4a5568; font-style: normal; }
-
         .form-group { margin-bottom: 22px; }
-        .form-group label {
-            display: block; font-size: 12px; margin-bottom: 10px;
-            color: #7a8499; letter-spacing: 0.08em; text-transform: uppercase;
-        }
-
+        .form-group label { display: block; font-size: 12px; margin-bottom: 10px; color: #7a8499; letter-spacing: 0.08em; text-transform: uppercase; }
         .power-row { display: flex; align-items: center; justify-content: space-between; }
-
         .switch { position: relative; display: inline-block; width: 56px; height: 30px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #2a2e3a; transition: .4s; border-radius: 30px;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 22px; width: 22px;
-            left: 4px; bottom: 4px; background-color: #fff; transition: .4s; border-radius: 50%;
-        }
+        .slider { position: absolute; cursor: pointer; top:0; left:0; right:0; bottom:0; background-color:#2a2e3a; transition:.4s; border-radius:30px; }
+        .slider:before { position:absolute; content:""; height:22px; width:22px; left:4px; bottom:4px; background-color:#fff; transition:.4s; border-radius:50%; }
         input:checked + .slider { background-color: #7EB5D6; }
         input:checked + .slider:before { transform: translateX(26px); }
-
-        .battery-display {
-            display: flex; align-items: center; justify-content: space-between;
-            background: #0d1016; padding: 14px 16px; border-radius: 8px; border: 1px solid #1e2230;
-        }
-        .battery-left { display: flex; flex-direction: column; gap: 4px; }
-        .battery-gauge { font-size: 22px; font-weight: 700; color: #7EB5D6; font-variant-numeric: tabular-nums; }
-        .battery-gauge.low { color: #ef4444; }
-        .charge-label { font-size: 11px; color: #4a5568; letter-spacing: 0.05em; }
-        .charge-label.charging { color: #7EB5D6; }
-        .charge-label.discharging { color: #6b7280; }
-
-        .range-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .range-label { font-size: 12px; color: #7a8499; text-transform: uppercase; letter-spacing: 0.08em; }
-        .range-val { font-size: 14px; font-weight: 700; color: #7EB5D6; }
-
-        input[type="range"] {
-            -webkit-appearance: none; width: 100%; height: 4px; background: #1e2230; border-radius: 2px; outline: none;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
-            background: #7EB5D6; cursor: pointer; box-shadow: 0 0 6px rgba(126,181,214,0.5);
-        }
-
-        .fixed-badge {
-            display: inline-flex; align-items: center; gap: 6px; background: #0d1016;
-            border: 1px solid #1e2230; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #7EB5D6;
-        }
-        .fixed-badge span { color: #4a5568; font-size: 11px; }
-
-        .visual-panel {
-            width: 55%; background-color: var(--bg-color); display: flex;
-            flex-direction: column; justify-content: center; align-items: center;
-            position: relative; padding: 30px; transition: background-color 0.5s;
-        }
-        .visual-panel svg { position: relative; z-index: 1; }
-
-        .debug-panel { width: 1000px; max-width: 100%; margin-top: 20px; background: #0a0c10; padding: 16px; border-radius: 10px; }
-        .debug-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
-        .debug-row input {
-            flex: 1; min-width: 200px; padding: 8px 12px; background: #13161e;
-            border: 1px solid #1e2230; color: #e0e0e0; border-radius: 6px; font-size: 13px;
-        }
-        .debug-label { font-size: 12px; color: #7a8499; margin-bottom: 8px; letter-spacing: 0.05em; }
-        .btn {
-            padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;
-            font-size: 13px; font-weight: 600; transition: background 0.2s; white-space: nowrap;
-        }
-        .btn-primary { background: #7EB5D6; color: #0d0f14; }
-        .btn-primary:hover { background: #9fcae5; }
-        .btn-danger { background: #ef4444; color: #fff; }
-        .btn-danger:hover { background: #dc2626; }
-
-        pre {
-            background: #060709; padding: 12px; border-radius: 6px; font-size: 12px;
-            color: #7EB5D6; overflow-x: auto; margin: 0; font-family: 'Consolas', monospace;
-        }
+        .battery-display { display:flex; align-items:center; justify-content:space-between; background:#0d1016; padding:14px 16px; border-radius:8px; border:1px solid #1e2230; }
+        .battery-left { display:flex; flex-direction:column; gap:4px; }
+        .battery-gauge { font-size:22px; font-weight:700; color:#7EB5D6; font-variant-numeric:tabular-nums; }
+        .battery-gauge.low { color:#ef4444; }
+        .charge-label { font-size:11px; color:#4a5568; letter-spacing:0.05em; }
+        .charge-label.charging { color:#7EB5D6; }
+        .charge-label.discharging { color:#6b7280; }
+        .range-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+        .range-label { font-size:12px; color:#7a8499; text-transform:uppercase; letter-spacing:0.08em; }
+        .range-val { font-size:14px; font-weight:700; color:#7EB5D6; }
+        input[type="range"] { -webkit-appearance:none; width:100%; height:4px; background:#1e2230; border-radius:2px; outline:none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:#7EB5D6; cursor:pointer; box-shadow:0 0 6px rgba(126,181,214,0.5); }
+        .fixed-badge { display:inline-flex; align-items:center; gap:6px; background:#0d1016; border:1px solid #1e2230; border-radius:6px; padding:10px 14px; font-size:13px; color:#7EB5D6; }
+        .fixed-badge span { color:#4a5568; font-size:11px; }
+        .visual-panel { width:55%; background-color:var(--bg-color); display:flex; flex-direction:column; justify-content:center; align-items:center; position:relative; padding:30px; transition:background-color 0.5s; }
+        .visual-panel svg { position:relative; z-index:1; }
+        .debug-panel { width:1000px; max-width:100%; margin-top:20px; background:#0a0c10; padding:16px; border-radius:10px; }
+        .debug-row { display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
+        .debug-row input { flex:1; min-width:200px; padding:8px 12px; background:#13161e; border:1px solid #1e2230; color:#e0e0e0; border-radius:6px; font-size:13px; }
+        .debug-label { font-size:12px; color:#7a8499; margin-bottom:8px; letter-spacing:0.05em; }
+        .btn { padding:8px 16px; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; transition:background 0.2s; white-space:nowrap; }
+        .btn-primary { background:#7EB5D6; color:#0d0f14; }
+        .btn-primary:hover { background:#9fcae5; }
+        .btn-danger { background:#ef4444; color:#fff; }
+        .btn-danger:hover { background:#dc2626; }
+        pre { background:#060709; padding:12px; border-radius:6px; font-size:12px; color:#7EB5D6; overflow-x:auto; margin:0; font-family:'Consolas',monospace; }
     </style>
 </head>
 <body>
-
     <h1>halo</h1>
     <div class="subtitle">Nordic Mood — Virtual Device Showroom</div>
-
     <div class="container">
         <div class="control-panel">
             <div class="halo-message-box">
                 <div class="halo-message-icon">🌙</div>
                 <div class="halo-message-text empty" id="halo-message">halo의 메시지를 기다리는 중...</div>
             </div>
-
             <div class="form-group">
                 <div class="power-row">
                     <label style="margin:0;">전원 ON / OFF</label>
-                    <label class="switch">
-                        <input type="checkbox" id="power" checked>
-                        <span class="slider"></span>
-                    </label>
+                    <label class="switch"><input type="checkbox" id="power" checked><span class="slider"></span></label>
                 </div>
             </div>
-
             <div class="form-group">
                 <label>배터리 잔량</label>
                 <div class="battery-display">
@@ -186,7 +83,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="form-group">
                 <div class="range-row">
                     <span class="range-label">밝기</span>
@@ -194,24 +90,20 @@
                 </div>
                 <input type="range" id="brightness" min="0" max="100" value="40">
             </div>
-
             <div class="form-group">
                 <label>색온도 (고정)</label>
-                <div class="fixed-badge">
-                    🌡️ 2700K — 전구색 (따뜻함) <span>변경 불가</span>
-                </div>
+                <div class="fixed-badge">🌡️ 2700K — 전구색 (따뜻함) <span>변경 불가</span></div>
             </div>
         </div>
-
         <div class="visual-panel" id="visual-panel">
             <svg id="halo-svg" width="100%" height="480" viewBox="0 0 680 480" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <radialGradient id="haloGlow" gradientUnits="userSpaceOnUse" cx="340" cy="203" r="300">
-                        <stop id="gStop0" offset="0%"   stop-color="#fffef5" stop-opacity="0.85" />
-                        <stop id="gStop1" offset="22%"  stop-color="#fff8dc" stop-opacity="0.52" />
-                        <stop id="gStop2" offset="48%"  stop-color="#ffe89a" stop-opacity="0.20" />
-                        <stop id="gStop3" offset="72%"  stop-color="#ffe89a" stop-opacity="0.06" />
-                        <stop id="gStop4" offset="100%" stop-color="#ffe89a" stop-opacity="0" />
+                        <stop id="gStop0" offset="0%"   stop-color="#fffef5" stop-opacity="0.85"/>
+                        <stop id="gStop1" offset="22%"  stop-color="#fff8dc" stop-opacity="0.52"/>
+                        <stop id="gStop2" offset="48%"  stop-color="#ffe89a" stop-opacity="0.20"/>
+                        <stop id="gStop3" offset="72%"  stop-color="#ffe89a" stop-opacity="0.06"/>
+                        <stop id="gStop4" offset="100%" stop-color="#ffe89a" stop-opacity="0"/>
                     </radialGradient>
                     <linearGradient id="lampGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                         <stop offset="0%"   stop-color="#ddd0a0"/>
@@ -230,327 +122,315 @@
                         <stop offset="0%"   stop-color="#6a0f08"/>
                         <stop offset="25%"  stop-color="#C0392B"/>
                         <stop offset="62%"  stop-color="#d9534f"/>
-                        <stop offset="100%" stroke-color="#6a0f08"/>
+                        <stop offset="100%" stop-color="#6a0f08"/>
                     </linearGradient>
                     <linearGradient id="baseShadow" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%"   stop-color="#000" stop-opacity="0"/>
                         <stop offset="100%" stop-color="#000" stop-opacity="0.28"/>
                     </linearGradient>
                 </defs>
-
-                <circle id="glowEllipse" cx="340" cy="203" r="300" fill="url(#haloGlow)" />
-                <rect id="diffuser" x="309" y="20" width="62" height="188" rx="4" fill="url(#lampGrad)" fill-opacity="0.97" />
-                <rect id="lightCore" x="317" y="30" width="12" height="172" rx="3" fill="#fff" fill-opacity="0.35" />
-                <rect x="351" y="30" width="6" height="172" rx="2" fill="#fff" fill-opacity="0.15" />
-                <ellipse cx="340" cy="208" rx="31" ry="5" fill="#c8a020" fill-opacity="0.20" />
-
-                <path id="bodyPath" d="M 309,208 L 254,349 L 426,349 L 371,208 Z" fill="url(#bodyGrad)" />
-                <path d="M 309,208 L 268,320 L 284,320 L 321,214 Z" fill="#fff" fill-opacity="0.07" />
-                <line x1="340" y1="215" x2="340" y2="343" stroke="#fff" stroke-opacity="0.10" stroke-width="1.5" />
-                <line x1="254" y1="349" x2="426" y2="349" stroke="#2d6a8a" stroke-width="1" />
-
-                <rect id="basePath" x="309" y="349" width="62" height="86" rx="3" fill="url(#baseGrad)" />
-                <rect x="309" y="349" width="62" height="86" rx="3" fill="url(#baseShadow)" />
-                <rect x="309" y="349" width="62" height="8" rx="3" fill="#fff" fill-opacity="0.12" />
-                <rect x="317" y="353" width="10" height="78" fill="#fff" fill-opacity="0.09" rx="2" />
-
-                <ellipse cx="340" cy="438" rx="31" ry="6" fill="#000" fill-opacity="0.20" />
+                <circle id="glowEllipse" cx="340" cy="203" r="300" fill="url(#haloGlow)"/>
+                <rect id="diffuser" x="309" y="20" width="62" height="188" rx="4" fill="url(#lampGrad)" fill-opacity="0.97"/>
+                <rect id="lightCore" x="317" y="30" width="12" height="172" rx="3" fill="#fff" fill-opacity="0.35"/>
+                <rect x="351" y="30" width="6" height="172" rx="2" fill="#fff" fill-opacity="0.15"/>
+                <ellipse cx="340" cy="208" rx="31" ry="5" fill="#c8a020" fill-opacity="0.20"/>
+                <path d="M 309,208 L 254,349 L 426,349 L 371,208 Z" fill="url(#bodyGrad)"/>
+                <path d="M 309,208 L 268,320 L 284,320 L 321,214 Z" fill="#fff" fill-opacity="0.07"/>
+                <line x1="340" y1="215" x2="340" y2="343" stroke="#fff" stroke-opacity="0.10" stroke-width="1.5"/>
+                <line x1="254" y1="349" x2="426" y2="349" stroke="#2d6a8a" stroke-width="1"/>
+                <rect x="309" y="349" width="62" height="86" rx="3" fill="url(#baseGrad)"/>
+                <rect x="309" y="349" width="62" height="86" rx="3" fill="url(#baseShadow)"/>
+                <rect x="309" y="349" width="62" height="8"  rx="3" fill="#fff" fill-opacity="0.12"/>
+                <rect x="317" y="353" width="10" height="78"      fill="#fff" fill-opacity="0.09" rx="2"/>
+                <ellipse cx="340" cy="438" rx="31" ry="6" fill="#000" fill-opacity="0.20"/>
             </svg>
         </div>
     </div>
-
     <div class="debug-panel">
         <div class="debug-row">
-            <label style="white-space: nowrap; margin:0; font-size:12px; color:#7a8499;">MCP Worker URL</label>
-            <input type="text" id="workerUrl" value="https://halo.typica-918.workers.dev" placeholder="배포한 MCP 서버 주소 입력">
+            <label style="white-space:nowrap;margin:0;font-size:12px;color:#7a8499;">MCP Worker URL</label>
+            <input type="text" id="workerUrl" value="" placeholder="배포한 MCP 서버 주소 입력 (예: https://halo.xxx.workers.dev)">
             <button class="btn btn-primary" id="togglePoll">폴링 시작</button>
         </div>
         <div class="debug-label">동기화 중인 현재 상태 JSON</div>
         <pre id="jsonViewer">{}</pre>
     </div>
 
-    <script>
-        // ── 1. 상태 초기화 ──────────────────────────────────────
-        const DEFAULT = {
-            power: true,
-            battery: 80.0,
-            brightness: 40,
-            charging: false,
-            uptimeMinutes: 0,
-        };
+<script>
+    // ── 1. 상태 ──────────────────────────────────────────────
+    let state = { power:true, battery:80.0, brightness:40, charging:false, uptimeMinutes:0 };
+    let isUserAdjusting = false;
 
-        let state = { ...DEFAULT };
-        let isUserAdjusting = false; // 사용자가 UI 조작 중일 때 수신 차단 플래그
-        let isServerOverriding = false; // 서버 데이터를 적용하는 순간 시뮬레이터 백업 전송 일시정지 플래그
+    // 중복 발화 방지 플래그
+    let chargeCompleteAlerted = false;
+    let lowBatteryAlerted     = false;
+    let longUptimeAlerted     = false;
 
-        // ── 2. DOM 캐시 ─────────────────────────────────────────
-        const elPower       = document.getElementById('power');
-        const elBattery     = document.getElementById('battery-gauge');
-        const elChargeLabel = document.getElementById('charge-label');
-        const elBrightness  = document.getElementById('brightness');
-        const elBrightVal   = document.getElementById('brightness-val');
-        const elJsonViewer  = document.getElementById('jsonViewer');
-        const elVisualPanel = document.getElementById('visual-panel');
-        const elHaloMsg     = document.getElementById('halo-message');
-        const elGlow        = document.getElementById('glowEllipse');
-        const elDiffuser    = document.getElementById('diffuser');
-        const elLightCore   = document.getElementById('lightCore');
+    // ★ 핵심 수정: MCP에서 마지막으로 동기화한 시각
+    // 동기화 직후 일정 시간 동안 시뮬레이터의 pushStateToServer()를 억제
+    let lastMcpSyncTime = 0;
+    const MCP_PUSH_GRACE_MS = 8000; // MCP 동기화 후 8초간 push 억제
 
-        // ── 3. 비주얼 렌더링 ────────────────────────────────────
-        function updateVisuals() {
-            elBattery.textContent = state.battery.toFixed(1) + '%';
-            elBattery.classList.toggle('low', state.battery <= 20);
+    // ── 2. DOM ───────────────────────────────────────────────
+    const elPower       = document.getElementById('power');
+    const elBattery     = document.getElementById('battery-gauge');
+    const elChargeLabel = document.getElementById('charge-label');
+    const elBrightness  = document.getElementById('brightness');
+    const elBrightVal   = document.getElementById('brightness-val');
+    const elJsonViewer  = document.getElementById('jsonViewer');
+    const elVisualPanel = document.getElementById('visual-panel');
+    const elHaloMsg     = document.getElementById('halo-message');
+    const elGlow        = document.getElementById('glowEllipse');
+    const elDiffuser    = document.getElementById('diffuser');
+    const elLightCore   = document.getElementById('lightCore');
 
-            if (state.charging) {
-                elChargeLabel.textContent = '충전중 ⚡';
-                elChargeLabel.className = 'charge-label charging';
-            } else {
-                elChargeLabel.textContent = '방전중';
-                elChargeLabel.className = 'charge-label discharging';
-            }
-
-            if (!state.power || state.battery <= 0) {
-                elGlow.style.opacity = '0';
-                elDiffuser.setAttribute('fill-opacity', '0.05');
-                elLightCore.setAttribute('fill-opacity', '0');
-                elVisualPanel.style.backgroundColor = '#080a0e';
-                elJsonViewer.textContent = JSON.stringify(state, null, 2);
-                return;
-            }
-
-            const b = state.brightness / 100;
-            elGlow.style.opacity = Math.max(0.05, b * 0.95);
-            elDiffuser.setAttribute('fill-opacity', (0.1 + b * 0.35).toFixed(2));
-            elLightCore.setAttribute('fill-opacity', (0.2 + b * 0.65).toFixed(2));
-
-            document.getElementById('gStop1').setAttribute('offset', `${5  + b * 15}%`);
-            document.getElementById('gStop2').setAttribute('offset', `${10 + b * 30}%`);
-            document.getElementById('gStop3').setAttribute('offset', `${20 + b * 45}%`);
-            document.getElementById('gStop4').setAttribute('offset', `${35 + b * 65}%`);
-
-            elVisualPanel.style.backgroundColor = `rgba(13,15,20,${1 - b * 0.15})`;
+    // ── 3. 비주얼 렌더 ──────────────────────────────────────
+    function updateVisuals() {
+        elBattery.textContent = state.battery.toFixed(1) + '%';
+        elBattery.classList.toggle('low', state.battery <= 20);
+        if (state.charging) {
+            elChargeLabel.textContent = '충전중 ⚡';
+            elChargeLabel.className = 'charge-label charging';
+        } else {
+            elChargeLabel.textContent = '방전중';
+            elChargeLabel.className = 'charge-label discharging';
+        }
+        if (!state.power || state.battery <= 0) {
+            elGlow.style.opacity = '0';
+            elDiffuser.setAttribute('fill-opacity','0.05');
+            elLightCore.setAttribute('fill-opacity','0');
+            elVisualPanel.style.backgroundColor = '#080a0e';
             elJsonViewer.textContent = JSON.stringify(state, null, 2);
+            return;
         }
+        const b = state.brightness / 100;
+        elGlow.style.opacity = Math.max(0.05, b * 0.95);
+        elDiffuser.setAttribute('fill-opacity', (0.1 + b * 0.35).toFixed(2));
+        elLightCore.setAttribute('fill-opacity', (0.2 + b * 0.65).toFixed(2));
+        document.getElementById('gStop1').setAttribute('offset', `${5  + b*15}%`);
+        document.getElementById('gStop2').setAttribute('offset', `${10 + b*30}%`);
+        document.getElementById('gStop3').setAttribute('offset', `${20 + b*45}%`);
+        document.getElementById('gStop4').setAttribute('offset', `${35 + b*65}%`);
+        elVisualPanel.style.backgroundColor = `rgba(13,15,20,${1 - b*0.15})`;
+        elJsonViewer.textContent = JSON.stringify(state, null, 2);
+    }
 
-        // ── 4. 배터리 소모/충전 시뮬레이터 (1초 인터벌) ──────────────
-        let lowBatteryAlerted = false;
-        let longUptimeAlerted = false;
+    // ── 4. 시뮬레이터 (1초) ─────────────────────────────────
+    let kvSyncCounter = 0;
+    setInterval(() => {
+        let needsPush = false;
 
-        setInterval(() => {
-            let changed = false;
-
-            // 방전 시뮬레이션
-            if (state.power && state.battery > 0 && !state.charging) {
-                const loss = (2 / 60) * (state.brightness / 100);
-                state.battery = Math.max(0, state.battery - loss);
-                state.uptimeMinutes = parseFloat((state.uptimeMinutes + 1/60).toFixed(4));
-                changed = true;
-
-                if (state.battery <= 20 && !lowBatteryAlerted) {
-                    lowBatteryAlerted = true;
-                    pushHaloMessage('배고파요, 충전해주세요.');
-                }
-
-                if (state.uptimeMinutes >= 360 && !longUptimeAlerted) {
-                    longUptimeAlerted = true;
-                    state.power = false;
-                    elPower.checked = false;
-                    pushHaloMessage('저 좀 쉬어도 될까요?');
-                    changed = true;
-                }
-
-                if (state.battery === 0) {
-                    state.power = false;
-                    elPower.checked = false;
-                    changed = true;
-                }
-            }
-
-            // 충전 시뮬레이션
-            if (state.charging) {
-                if (state.battery < 100) {
-                    state.battery = Math.min(100, state.battery + 0.5);
-                    if (state.battery > 20) lowBatteryAlerted = false;
-                    changed = true;
-                } else if (state.battery >= 100 && state.battery < 100.1) {
-                    state.battery = 100;
-                    pushHaloMessage('배불러요. 이제 일할 수 있어요.');
-                    changed = true;
-                }
-            }
-
-            if (changed) {
-                updateVisuals();
-                // ⚠️ 중요: 서버 오버라이드 싱크 주기 도중에는 백업 전송을 잠시 차단하여 레이스 컨디션 해결
-                if (!isServerOverriding && !isUserAdjusting) {
-                    pushStateToServer();
-                }
-            }
-        }, 1000);
-
-        // ── 5. 서버 통신 함수 ────────────────────────────────────
-        async function pushHaloMessage(message) {
-            const base = document.getElementById('workerUrl').value.trim().replace(/\/$/, '');
-            if (!base || !pollingInterval) return;
-            try {
-                await fetch(`${base}/last-message`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message }),
-                });
-                renderHaloMessage(message);
-            } catch (err) {
-                console.error('발화 저장 오류:', err);
-            }
-        }
-
-        async function pushStateToServer() {
-            const base = document.getElementById('workerUrl').value.trim().replace(/\/$/, '');
-            if (!base || !pollingInterval) return;
-            try {
-                const body = JSON.stringify(state);
-                await fetch(`${base}/state`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: body,
-                });
-            } catch (err) {
-                console.error('상태 저장 오류:', err);
-            }
-        }
-
-        // ── 6. UI 이벤트 핸들러 (사용자가 웹 브라우저에서 제어할 때) ──
-        elPower.addEventListener('change', (e) => {
-            state.power = e.target.checked;
-            if (!state.power) pushHaloMessage('저 켜주세요, 심심해요.');
+        // 충전 중: 0.5%/s 증가
+        if (state.charging && state.battery < 100) {
+            state.battery = Math.min(100, state.battery + 0.5);
+            chargeCompleteAlerted = false;
             updateVisuals();
-            pushStateToServer();
-        });
-
-        elBrightness.addEventListener('mousedown', () => { isUserAdjusting = true; });
-        elBrightness.addEventListener('touchstart', () => { isUserAdjusting = true; });
-
-        elBrightness.addEventListener('input', (e) => {
-            state.brightness = parseInt(e.target.value);
-            elBrightVal.textContent = state.brightness + '%';
-            updateVisuals();
-        });
-
-        elBrightness.addEventListener('change', (e) => {
-            state.brightness = parseInt(e.target.value);
-            elBrightVal.textContent = state.brightness + '%';
-            updateVisuals();
-            pushStateToServer();
-            isUserAdjusting = false;
-        });
-
-        function renderHaloMessage(msg) {
-            if (msg) {
-                elHaloMsg.textContent = `" ${msg} "`;
-                elHaloMsg.classList.remove('empty');
-            } else {
-                elHaloMsg.textContent = 'halo의 메시지를 기다리는 중...';
-                elHaloMsg.classList.add('empty');
-            }
+            if (++kvSyncCounter >= 10) { needsPush = true; kvSyncCounter = 0; }
         }
 
-        // ── 7. MCP 폴링 정밀화 (레이스 컨디션 완전 타파) ────────────────────
-        let pollingInterval = null;
-        const btnTogglePoll = document.getElementById('togglePoll');
-        const elWorkerUrl   = document.getElementById('workerUrl');
+        // 충전 완료 — 1회만 발화
+        if (state.charging && state.battery >= 100 && !chargeCompleteAlerted) {
+            chargeCompleteAlerted = true;
+            state.battery = 100;
+            pushHaloMessage('배불러요. 이제 일할 수 있어요.');
+            needsPush = true;
+        }
 
-        async function syncWithMcp() {
-            const base = elWorkerUrl.value.trim().replace(/\/$/, '');
-            if (!base) return;
+        // 방전 중
+        if (state.power && state.battery > 0 && !state.charging) {
+            state.battery = Math.max(0, state.battery - (2/60) * (state.brightness/100));
+            state.uptimeMinutes = parseFloat((state.uptimeMinutes + 1/60).toFixed(4));
 
-            try {
-                const resState = await fetch(`${base}/state`);
-                if (resState.ok) {
-                    const text = await resState.text();
-                    if (text && text !== '{}') {
-                        const serverState = JSON.parse(text);
-                        
-                        if (!isUserAdjusting) {
-                            // 💡 [핵심 가드]: 클로드(서버)가 변경한 핵심 플래그가 현재 쇼룸 상태와 다르면, 서버 명령을 전적으로 수용
-                            if (
-                                state.power !== serverState.power ||
-                                state.brightness !== serverState.brightness ||
-                                state.charging !== serverState.charging
-                            ) {
-                                isServerOverriding = true; // 시뮬레이터 백업 전송 잠금 활성화
+            if (state.battery <= 20 && !lowBatteryAlerted) {
+                lowBatteryAlerted = true;
+                pushHaloMessage('배고파요, 충전해주세요.');
+            }
+            if (state.battery > 20) lowBatteryAlerted = false;
 
-                                state.power = serverState.power;
-                                state.brightness = serverState.brightness;
-                                state.charging = serverState.charging;
-                                
-                                if (serverState.uptimeMinutes !== undefined) {
-                                    state.uptimeMinutes = serverState.uptimeMinutes;
-                                }
-                                // 배터리는 소수점 덮어쓰기 방지를 위해 서버가 충전을 새로 요청했거나 강제 보정될 때 싱크
-                                if (Math.abs(state.battery - serverState.battery) > 2) {
-                                    state.battery = serverState.battery;
-                                }
+            if (state.uptimeMinutes >= 360 && !longUptimeAlerted) {
+                longUptimeAlerted = true;
+                state.power = false;
+                elPower.checked = false;
+                pushHaloMessage('저 좀 쉬어도 될까요?');
+                needsPush = true;
+            }
+            if (state.battery === 0) {
+                state.power = false;
+                elPower.checked = false;
+                needsPush = true;
+            }
+            updateVisuals();
+            if (++kvSyncCounter >= 10) { needsPush = true; kvSyncCounter = 0; }
+        }
 
-                                applyStateToUi();
+        if (needsPush) pushStateToServer();
+    }, 1000);
 
-                                // 서버 정합이 끝난 후 레이스 컨디션 루프를 끊기 위해 잠금 해제 시간차 부여
-                                setTimeout(() => { isServerOverriding = false; }, 200);
-                            }
-                        }
+    // ── 5. 서버 통신 ────────────────────────────────────────
+    async function pushHaloMessage(message) {
+        renderHaloMessage(message);
+        const base = document.getElementById('workerUrl').value.trim().replace(/\/$/,'');
+        if (!base) return;
+        try {
+            await fetch(`${base}/last-message`, {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ message })
+            });
+        } catch(e) { console.error('발화 저장 오류:', e); }
+    }
+
+    async function pushStateToServer() {
+        // ★ MCP 동기화 직후 grace period 동안 push 억제
+        // — 시뮬레이터가 구 state로 서버를 덮어쓰는 것을 방지
+        if (Date.now() - lastMcpSyncTime < MCP_PUSH_GRACE_MS) return;
+
+        const base = document.getElementById('workerUrl').value.trim().replace(/\/$/,'');
+        if (!base) return;
+        try {
+            await fetch(`${base}/state`, {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify(state)
+            });
+        } catch(e) { console.error('상태 저장 오류:', e); }
+    }
+
+    // ── 6. 이벤트 ───────────────────────────────────────────
+    elPower.addEventListener('change', (e) => {
+        state.power = e.target.checked;
+        if (!state.power) pushHaloMessage('저 켜주세요, 심심해요.');
+        updateVisuals();
+        pushStateToServer();
+    });
+
+    elBrightness.addEventListener('input', (e) => {
+        isUserAdjusting = true;
+        state.brightness = parseInt(e.target.value);
+        elBrightVal.textContent = state.brightness + '%';
+        updateVisuals();
+    });
+
+    elBrightness.addEventListener('change', (e) => {
+        isUserAdjusting = false;
+        state.brightness = parseInt(e.target.value);
+        elBrightVal.textContent = state.brightness + '%';
+        updateVisuals();
+        // ★ 사용자가 직접 조작할 때는 grace period 무시하고 즉시 push
+        pushStateToServerForce();
+    });
+
+    elBrightness.addEventListener('mouseup',  () => { isUserAdjusting = false; });
+    elBrightness.addEventListener('touchend', () => { isUserAdjusting = false; });
+
+    // 사용자 직접 조작 시 grace period 무시하고 강제 push
+    async function pushStateToServerForce() {
+        const base = document.getElementById('workerUrl').value.trim().replace(/\/$/,'');
+        if (!base) return;
+        try {
+            await fetch(`${base}/state`, {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify(state)
+            });
+        } catch(e) { console.error('상태 저장 오류:', e); }
+    }
+
+    // ── 7. halo 메시지 렌더 ──────────────────────────────────
+    function renderHaloMessage(msg) {
+        if (msg) {
+            elHaloMsg.textContent = `" ${msg} "`;
+            elHaloMsg.classList.remove('empty');
+        } else {
+            elHaloMsg.textContent = 'halo의 메시지를 기다리는 중...';
+            elHaloMsg.classList.add('empty');
+        }
+    }
+
+    // ── 8. MCP 폴링 ─────────────────────────────────────────
+    let pollingInterval = null;
+    const btnTogglePoll = document.getElementById('togglePoll');
+    const elWorkerUrl   = document.getElementById('workerUrl');
+
+    async function syncWithMcp() {
+        const base = elWorkerUrl.value.trim().replace(/\/$/,'');
+        if (!base) return;
+        try {
+            const resState = await fetch(`${base}/state`);
+            if (resState.ok) {
+                const text = await resState.text();
+                if (text && text !== '{}') {
+                    const sv = JSON.parse(text);
+                    // ★ 변경 감지: 서버와 로컬 state가 다를 때만 반영
+                    const changed =
+                        state.power      !== sv.power      ||
+                        state.brightness !== sv.brightness ||
+                        state.charging   !== sv.charging;
+
+                    if (!isUserAdjusting && changed) {
+                        state.power      = sv.power;
+                        state.brightness = sv.brightness;
+                        state.charging   = sv.charging;
+                        if (sv.uptimeMinutes !== undefined) state.uptimeMinutes = sv.uptimeMinutes;
+                        if (sv.battery      !== undefined) state.battery       = sv.battery;
+                        if (!sv.charging) chargeCompleteAlerted = false;
+
+                        // ★ 동기화 시각 갱신 — 이후 grace period 동안 시뮬레이터 push 억제
+                        lastMcpSyncTime = Date.now();
+
+                        applyStateToUi();
                     }
                 }
-
-                const resMsg = await fetch(`${base}/last-message`);
-                if (resMsg.ok) {
-                    const data = await resMsg.json();
-                    renderHaloMessage(data.message);
-                }
-
-            } catch (err) {
-                console.error('MCP 동기화 오류:', err);
             }
-        }
-
-        function applyStateToUi() {
-            elPower.checked = state.power;
-            elBrightness.value = state.brightness;
-            elBrightVal.textContent = state.brightness + '%';
-            updateVisuals();
-        }
-
-        btnTogglePoll.addEventListener('click', () => {
-            if (pollingInterval) {
-                clearInterval(pollingInterval);
-                pollingInterval = null;
-                btnTogglePoll.textContent = '폴링 시작';
-                btnTogglePoll.className = 'btn btn-primary';
-            } else {
-                syncWithMcp();
-                pollingInterval = setInterval(syncWithMcp, 2000);
-                btnTogglePoll.textContent = '폴링 중단';
-                btnTogglePoll.className = 'btn btn-danger';
+            const resMsg = await fetch(`${base}/last-message`);
+            if (resMsg.ok) {
+                const data = await resMsg.json();
+                renderHaloMessage(data.message);
             }
-        });
+        } catch(e) { console.error('MCP 동기화 오류:', e); }
+    }
 
-        // ── 8. 초기 렌더링 ──────────────────────────────────────
-        async function initState() {
-            const base = elWorkerUrl.value.trim().replace(/\/$/, '');
-            if (!base) { applyStateToUi(); return; }
-            try {
-                const res = await fetch(`${base}/state`);
-                if (!res.ok) { applyStateToUi(); return; }
+    function applyStateToUi() {
+        elPower.checked = state.power;
+        elBrightness.value = state.brightness;
+        elBrightVal.textContent = state.brightness + '%';
+        updateVisuals();
+    }
+
+    btnTogglePoll.addEventListener('click', () => {
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+            pollingInterval = null;
+            btnTogglePoll.textContent = '폴링 시작';
+            btnTogglePoll.className = 'btn btn-primary';
+        } else {
+            syncWithMcp();
+            pollingInterval = setInterval(syncWithMcp, 2000);
+            btnTogglePoll.textContent = '폴링 중단';
+            btnTogglePoll.className = 'btn btn-danger';
+        }
+    });
+
+    // ── 9. 초기화 ───────────────────────────────────────────
+    async function initState() {
+        const base = elWorkerUrl.value.trim().replace(/\/$/,'');
+        if (!base) { applyStateToUi(); return; }
+        try {
+            const res = await fetch(`${base}/state`);
+            if (res.ok) {
                 const text = await res.text();
                 if (text && text !== '{}') {
-                    const serverState = JSON.parse(text);
-                    state.power      = serverState.power;
-                    state.brightness = serverState.brightness;
-                    state.charging   = serverState.charging;
-                    state.battery    = serverState.battery ?? state.battery;
+                    const sv = JSON.parse(text);
+                    state.power         = sv.power         ?? true;
+                    state.brightness    = sv.brightness    ?? 40;
+                    state.charging      = sv.charging      ?? false;
+                    state.uptimeMinutes = sv.uptimeMinutes ?? 0;
+                    state.battery       = sv.battery       ?? 80.0;
+                    lastMcpSyncTime     = Date.now(); // 초기 로드도 grace period 적용
                 }
-            } catch (e) {}
-            applyStateToUi();
-        }
-        initState();
-    </script>
+            }
+        } catch(e) { console.warn('초기 상태 로드 실패, 기본값 사용'); }
+        applyStateToUi();
+    }
+
+    initState();
+</script>
 </body>
 </html>
