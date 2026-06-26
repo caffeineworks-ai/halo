@@ -104,7 +104,7 @@
             text-transform: uppercase;
         }
 
-        /* 전원 스위치 */
+        /* 전원 / 충전 스위치 행 */
         .power-row {
             display: flex;
             align-items: center;
@@ -133,6 +133,9 @@
         }
         input:checked + .slider { background-color: #7EB5D6; }
         input:checked + .slider:before { transform: translateX(26px); }
+
+        /* 충전 스위치 — 켜지면 녹색 */
+        .switch-charging input:checked + .slider { background-color: #22c55e; }
 
         /* 배터리 */
         .battery-display {
@@ -166,7 +169,7 @@
             letter-spacing: 0.05em;
         }
 
-        .charge-label.charging { color: #7EB5D6; }
+        .charge-label.charging { color: #22c55e; }
         .charge-label.discharging { color: #6b7280; }
 
         /* 밝기 슬라이더 */
@@ -229,69 +232,6 @@
             position: relative;
             z-index: 1;
         }
-
-        /* 하단 디버그 패널 */
-        .debug-panel {
-            width: 1000px;
-            max-width: 100%;
-            margin-top: 20px;
-            background: #0a0c10;
-            padding: 16px;
-            border-radius: 10px;
-        }
-
-        .debug-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
-        .debug-row input {
-            flex: 1;
-            min-width: 200px;
-            padding: 8px 12px;
-            background: #13161e;
-            border: 1px solid #1e2230;
-            color: #e0e0e0;
-            border-radius: 6px;
-            font-size: 13px;
-        }
-
-        .debug-label {
-            font-size: 12px;
-            color: #7a8499;
-            margin-bottom: 8px;
-            letter-spacing: 0.05em;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: background 0.2s;
-            white-space: nowrap;
-        }
-
-        .btn-primary { background: #7EB5D6; color: #0d0f14; }
-        .btn-primary:hover { background: #9fcae5; }
-        .btn-danger { background: #ef4444; color: #fff; }
-        .btn-danger:hover { background: #dc2626; }
-
-        pre {
-            background: #060709;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: #7EB5D6;
-            overflow-x: auto;
-            margin: 0;
-            font-family: 'Consolas', monospace;
-        }
     </style>
 </head>
 <body>
@@ -316,6 +256,17 @@
                     <label style="margin:0;">전원 ON / OFF</label>
                     <label class="switch">
                         <input type="checkbox" id="power" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 충전 (신규) -->
+            <div class="form-group">
+                <div class="power-row">
+                    <label style="margin:0;">충전 ON / OFF</label>
+                    <label class="switch switch-charging">
+                        <input type="checkbox" id="charging">
                         <span class="slider"></span>
                     </label>
                 </div>
@@ -353,18 +304,8 @@
 
         <!-- 비주얼 패널 -->
         <div class="visual-panel" id="visual-panel">
-
-            <!--
-                cx=340 기준 (visual-panel 중앙)
-                램프 반폭: 31  (폭 62, 원본 120 비율)
-                갓 상단: 램프폭과 동일 62 / 하단: 폭 172 (원본 334 비율)
-                기둥: 램프폭과 동일 62
-                높이: 램프188 / 갓141 / 기둥86  (원본 393:295:180 비율)
-                글로우: gradientUnits="userSpaceOnUse" 로 viewBox 내 좌우 잘림 방지
-            -->
             <svg id="halo-svg" width="100%" height="480" viewBox="0 0 680 480" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                    <!-- 글로우 중심: 램프 하단(y=208)에서 5px 위 → cy=203, 정원(r=300) -->
                     <radialGradient id="haloGlow" gradientUnits="userSpaceOnUse"
                                     cx="340" cy="203" r="300">
                         <stop id="gStop0" offset="0%"   stop-color="#fffef5" stop-opacity="0.85" />
@@ -398,10 +339,8 @@
                     </linearGradient>
                 </defs>
 
-                <!-- 글로우: 정원, 중심 cy=203 (램프 하단 y=208에서 5px 위) -->
                 <circle id="glowEllipse" cx="340" cy="203" r="300" fill="url(#haloGlow)" />
 
-                <!-- ── 램프 (확산체): x=309..371, y=20..208 ── -->
                 <rect id="diffuser" x="309" y="20" width="62" height="188" rx="4"
                       fill="url(#lampGrad)" fill-opacity="0.97" />
                 <rect id="lightCore" x="317" y="30" width="12" height="172" rx="3"
@@ -411,7 +350,6 @@
                 <ellipse cx="340" cy="208" rx="31" ry="5"
                          fill="#c8a020" fill-opacity="0.20" />
 
-                <!-- ── 파란 갓: 상단 309..371 → 하단 254..426 ── -->
                 <path id="bodyPath"
                       d="M 309,208 L 254,349 L 426,349 L 371,208 Z"
                       fill="url(#bodyGrad)" />
@@ -422,7 +360,6 @@
                 <line x1="254" y1="349" x2="426" y2="349"
                       stroke="#2d6a8a" stroke-width="1" />
 
-                <!-- ── 빨간 기둥: 램프와 동일 폭 62, x=309..371 ── -->
                 <rect id="basePath" x="309" y="349" width="62" height="86" rx="3"
                       fill="url(#baseGrad)" />
                 <rect x="309" y="349" width="62" height="86" rx="3"
@@ -432,30 +369,18 @@
                 <rect x="317" y="353" width="10" height="78"
                       fill="#fff" fill-opacity="0.09" rx="2" />
 
-                <!-- 바닥 그림자 -->
                 <ellipse cx="340" cy="438" rx="31" ry="6"
                          fill="#000" fill-opacity="0.20" />
             </svg>
-
         </div>
-    </div>
-
-    <!-- 디버그 패널 -->
-    <div class="debug-panel">
-        <div class="debug-row">
-            <label style="white-space: nowrap; margin:0; font-size:12px; color:#7a8499;">MCP Worker URL</label>
-            <input type="text" id="workerUrl"
-                   value="https://halo-mcp.username.workers.dev"
-                   placeholder="배포한 MCP 서버 주소 입력">
-            <button class="btn btn-primary" id="togglePoll">폴링 시작</button>
-        </div>
-        <div class="debug-label">동기화 중인 현재 상태 JSON</div>
-        <pre id="jsonViewer">{}</pre>
     </div>
 
     <script>
-        // ── 1. 상태 초기화 ──────────────────────────────────────
-        const DEFAULT = {
+        // ── 1. Worker URL 하드코딩 (폴링 버튼 제거) ─────────────
+        const MCP_WORKER_URL = "https://halo.typica-918.workers.dev";
+
+        // ── 2. 상태 초기화 ────────────────────────────────────────
+        let state = {
             power: true,
             battery: 80.0,
             brightness: 40,
@@ -463,28 +388,24 @@
             uptimeMinutes: 0,
         };
 
-        let state = { ...DEFAULT };
-
-        // ── 2. DOM 캐시 ─────────────────────────────────────────
+        // ── 3. DOM 캐시 ──────────────────────────────────────────
         const elPower       = document.getElementById('power');
+        const elCharging    = document.getElementById('charging');
         const elBattery     = document.getElementById('battery-gauge');
         const elChargeLabel = document.getElementById('charge-label');
         const elBrightness  = document.getElementById('brightness');
         const elBrightVal   = document.getElementById('brightness-val');
-        const elJsonViewer  = document.getElementById('jsonViewer');
         const elVisualPanel = document.getElementById('visual-panel');
         const elHaloMsg     = document.getElementById('halo-message');
         const elGlow        = document.getElementById('glowEllipse');
         const elDiffuser    = document.getElementById('diffuser');
         const elLightCore   = document.getElementById('lightCore');
 
-        // ── 3. 비주얼 렌더링 ────────────────────────────────────
+        // ── 4. 비주얼 렌더링 ─────────────────────────────────────
         function updateVisuals() {
-            // 배터리 표시
             elBattery.textContent = state.battery.toFixed(1) + '%';
             elBattery.classList.toggle('low', state.battery <= 20);
 
-            // 충전 레이블
             if (state.charging) {
                 elChargeLabel.textContent = '충전중 ⚡';
                 elChargeLabel.className = 'charge-label charging';
@@ -493,89 +414,47 @@
                 elChargeLabel.className = 'charge-label discharging';
             }
 
-            // 전원 OFF 또는 배터리 방전
             if (!state.power || state.battery <= 0) {
                 elGlow.style.opacity = '0';
                 elDiffuser.setAttribute('fill-opacity', '0.05');
                 elLightCore.setAttribute('fill-opacity', '0');
                 elVisualPanel.style.backgroundColor = '#080a0e';
-                elJsonViewer.textContent = JSON.stringify(state, null, 2);
                 return;
             }
 
-            // 전원 ON: 밝기에 따라 글로우 강도 조절
             const b = state.brightness / 100;
             elGlow.style.opacity = Math.max(0.05, b * 0.95);
             elDiffuser.setAttribute('fill-opacity', (0.1 + b * 0.35).toFixed(2));
             elLightCore.setAttribute('fill-opacity', (0.2 + b * 0.65).toFixed(2));
 
-            // 그라디언트 스톱 조절
             document.getElementById('gStop1').setAttribute('offset', `${5  + b * 15}%`);
             document.getElementById('gStop2').setAttribute('offset', `${10 + b * 30}%`);
             document.getElementById('gStop3').setAttribute('offset', `${20 + b * 45}%`);
             document.getElementById('gStop4').setAttribute('offset', `${35 + b * 65}%`);
 
             elVisualPanel.style.backgroundColor = `rgba(13,15,20,${1 - b * 0.15})`;
-            elJsonViewer.textContent = JSON.stringify(state, null, 2);
         }
 
-        // ── 4. 배터리 소모 시뮬레이터 (1초 인터벌) ──────────────
-        // 밝기 100%일 때 분당 2% 소모 (초당 0.0333%)
-        let lowBatteryAlerted = false;
-        let longUptimeAlerted = false;
+        // ── 5. 서버에 상태 저장 (가드 조건 제거) ────────────────
+        let lastStateStr = "";
 
-        setInterval(() => {
-            if (state.power && state.battery > 0 && !state.charging) {
-                const loss = (2 / 60) * (state.brightness / 100);
-                state.battery = Math.max(0, state.battery - loss);
-
-                // 누적 켜진 시간 트래킹 (1초 = 1/60 분)
-                state.uptimeMinutes = parseFloat(
-                    (state.uptimeMinutes + 1/60).toFixed(4)
-                );
-
-                // 배터리 20% 이하 → "배고파요"
-                if (state.battery <= 20 && !lowBatteryAlerted) {
-                    lowBatteryAlerted = true;
-                    pushHaloMessage('배고파요, 충전해주세요.');
-                }
-
-                // 배터리 20% 초과로 회복 시 알림 리셋
-                if (state.battery > 20) lowBatteryAlerted = false;
-
-                // 6시간(360분) 이상 켜짐 → "쉬어도 될까요?" + 자동 OFF
-                if (state.uptimeMinutes >= 360 && !longUptimeAlerted) {
-                    longUptimeAlerted = true;
-                    state.power = false;
-                    elPower.checked = false;
-                    pushHaloMessage('저 좀 쉬어도 될까요?');
-                    pushStateToServer();
-                }
-
-                // 배터리 방전 시 강제 OFF
-                if (state.battery === 0) {
-                    state.power = false;
-                    elPower.checked = false;
-                }
-
-                updateVisuals();
-            }
-
-            // 충전 중 배터리 100% 도달 → "배불러요"
-            if (state.charging && state.battery >= 100) {
-                state.battery = 100;
-                pushHaloMessage('배불러요. 이제 일할 수 있어요.');
-                pushStateToServer();
-            }
-        }, 1000);
-
-        // ── 5. 이벤트 핸들러 ────────────────────────────────────
-        // ── 6. 서버에 상태 저장 (UI 조작 즉시 반영) ────────────
-        async function pushHaloMessage(message) {
-            const base = document.getElementById('workerUrl').value.trim().replace(/\/$/, '');
-            if (!base || !pollingInterval) return;
+        async function pushStateToServer() {
             try {
-                await fetch(`${base}/last-message`, {
+                const body = JSON.stringify(state);
+                await fetch(`${MCP_WORKER_URL}/state`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body,
+                });
+                lastStateStr = body;
+            } catch (err) {
+                console.error('상태 저장 오류:', err);
+            }
+        }
+
+        async function pushHaloMessage(message) {
+            try {
+                await fetch(`${MCP_WORKER_URL}/last-message`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message }),
@@ -586,22 +465,7 @@
             }
         }
 
-        async function pushStateToServer() {
-            const base = document.getElementById('workerUrl').value.trim().replace(/\/$/, '');
-            if (!base || !pollingInterval) return; // 폴링 중일 때만 전송
-            try {
-                const body = JSON.stringify(state);
-                await fetch(`${base}/state`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: body,
-                });
-                lastStateStr = body; // 내가 방금 저장한 값 → 다음 폴링에서 스킵
-            } catch (err) {
-                console.error('상태 저장 오류:', err);
-            }
-        }
-
+        // ── 6. UI → 서버 이벤트 핸들러 ──────────────────────────
         elPower.addEventListener('change', (e) => {
             state.power = e.target.checked;
             if (!state.power) pushHaloMessage('저 켜주세요, 심심해요.');
@@ -609,9 +473,8 @@
             pushStateToServer();
         });
 
-        elBrightness.addEventListener('change', (e) => {
-            state.brightness = parseInt(e.target.value);
-            elBrightVal.textContent = state.brightness + '%';
+        elCharging.addEventListener('change', (e) => {
+            state.charging = e.target.checked;
             updateVisuals();
             pushStateToServer();
         });
@@ -622,7 +485,14 @@
             updateVisuals();
         });
 
-        // ── 7. halo 메시지 표시 ──────────────────────────────────
+        elBrightness.addEventListener('change', (e) => {
+            state.brightness = parseInt(e.target.value);
+            elBrightVal.textContent = state.brightness + '%';
+            updateVisuals();
+            pushStateToServer();
+        });
+
+        // ── 7. halo 메시지 표시 ───────────────────────────────────
         function renderHaloMessage(msg) {
             if (msg) {
                 elHaloMsg.textContent = `" ${msg} "`;
@@ -633,83 +503,109 @@
             }
         }
 
-        // ── 8. MCP 폴링 (상태 + 마지막 발화) ────────────────────
-        let pollingInterval = null;
-        let lastStateStr = null;
-        const btnTogglePoll = document.getElementById('togglePoll');
-        const elWorkerUrl   = document.getElementById('workerUrl');
-
-        async function syncWithMcp() {
-            const base = elWorkerUrl.value.trim().replace(/\/$/, '');
-            if (!base) return;
-
-            try {
-                // 상태 폴링 — 이전과 동일한 값이면 UI 건드리지 않음
-                const resState = await fetch(`${base}/state`);
-                if (resState.ok) {
-                    const text = await resState.text();
-                    if (text !== '{}' && text !== lastStateStr) {
-                        lastStateStr = text;
-                        const serverState = JSON.parse(text);
-                        state.power      = serverState.power;
-                        state.brightness = serverState.brightness;
-                        state.charging   = serverState.charging;
-                        applyStateToUi();
-                    }
-                }
-
-                // 마지막 발화 폴링
-                const resMsg = await fetch(`${base}/last-message`);
-                if (resMsg.ok) {
-                    const data = await resMsg.json();
-                    renderHaloMessage(data.message);
-                }
-
-            } catch (err) {
-                console.error('MCP 동기화 오류:', err);
-            }
-        }
-
+        // ── 8. 서버 → UI 상태 반영 ───────────────────────────────
         function applyStateToUi() {
-            elPower.checked = state.power;
-            elBrightness.value = state.brightness;
+            elPower.checked      = state.power;
+            elCharging.checked   = state.charging;
+            elBrightness.value   = state.brightness;
             elBrightVal.textContent = state.brightness + '%';
             updateVisuals();
         }
 
-        btnTogglePoll.addEventListener('click', () => {
-            if (pollingInterval) {
-                clearInterval(pollingInterval);
-                pollingInterval = null;
-                btnTogglePoll.textContent = '폴링 시작';
-                btnTogglePoll.className = 'btn btn-primary';
-            } else {
-                syncWithMcp(); // 즉시 1회 실행
-                pollingInterval = setInterval(syncWithMcp, 2000);
-                btnTogglePoll.textContent = '폴링 중단';
-                btnTogglePoll.className = 'btn btn-danger';
-            }
-        });
-
-        // ── 8. 초기 렌더링 — 서버 KV에서 상태 가져온 후 적용 ──
-        async function initState() {
-            const base = elWorkerUrl.value.trim().replace(/\/$/, '');
-            if (!base) { applyStateToUi(); return; }
+        // ── 9. MCP 폴링 (자동 시작, 가드 없음) ──────────────────
+        async function pollState() {
             try {
-                const res = await fetch(`${base}/state`);
+                const res = await fetch(`${MCP_WORKER_URL}/state`);
+                if (!res.ok) return;
+                const text = await res.text();
+                if (text === '{}' || text === lastStateStr) return;
+                lastStateStr = text;
+                const serverState = JSON.parse(text);
+                if (typeof serverState.power      === 'boolean') state.power      = serverState.power;
+                if (typeof serverState.brightness === 'number')  state.brightness = serverState.brightness;
+                if (typeof serverState.charging   === 'boolean') state.charging   = serverState.charging;
+                if (typeof serverState.battery    === 'number')  state.battery    = serverState.battery;
+                applyStateToUi();
+            } catch (err) {
+                // 연결 실패 무시
+            }
+        }
+
+        async function pollMessage() {
+            try {
+                const res = await fetch(`${MCP_WORKER_URL}/last-message`);
+                if (!res.ok) return;
+                const data = await res.json();
+                renderHaloMessage(data.message);
+            } catch (err) {}
+        }
+
+        // ── 10. 배터리 소모 시뮬레이터 (1초) ────────────────────
+        let lowBatteryAlerted = false;
+        let longUptimeAlerted = false;
+
+        setInterval(() => {
+            if (state.power && state.battery > 0 && !state.charging) {
+                const loss = (2 / 60) * (state.brightness / 100);
+                state.battery = Math.max(0, state.battery - loss);
+                state.uptimeMinutes = parseFloat((state.uptimeMinutes + 1/60).toFixed(4));
+
+                if (state.battery <= 20 && !lowBatteryAlerted) {
+                    lowBatteryAlerted = true;
+                    pushHaloMessage('배고파요, 충전해주세요.');
+                }
+                if (state.battery > 20) lowBatteryAlerted = false;
+
+                if (state.uptimeMinutes >= 360 && !longUptimeAlerted) {
+                    longUptimeAlerted = true;
+                    state.power = false;
+                    elPower.checked = false;
+                    pushHaloMessage('저 좀 쉬어도 될까요?');
+                    pushStateToServer();
+                }
+
+                if (state.battery === 0) {
+                    state.power = false;
+                    elPower.checked = false;
+                }
+
+                updateVisuals();
+            }
+
+            if (state.charging && state.battery < 100) {
+                state.battery = Math.min(100, state.battery + (2 / 60));
+                updateVisuals();
+            }
+
+            if (state.charging && state.battery >= 100) {
+                state.battery = 100;
+                pushHaloMessage('배불러요. 이제 일할 수 있어요.');
+                pushStateToServer();
+            }
+        }, 1000);
+
+        // ── 11. 초기화 및 폴링 자동 시작 ─────────────────────────
+        async function initState() {
+            try {
+                const res = await fetch(`${MCP_WORKER_URL}/state`);
                 if (!res.ok) { applyStateToUi(); return; }
                 const text = await res.text();
                 if (text && text !== '{}') {
                     lastStateStr = text;
-                    const serverState = JSON.parse(text);
-                    state.power      = serverState.power;
-                    state.brightness = serverState.brightness;
-                    state.charging   = serverState.charging;
+                    const s = JSON.parse(text);
+                    if (typeof s.power      === 'boolean') state.power      = s.power;
+                    if (typeof s.brightness === 'number')  state.brightness = s.brightness;
+                    if (typeof s.charging   === 'boolean') state.charging   = s.charging;
+                    if (typeof s.battery    === 'number')  state.battery    = s.battery;
                 }
             } catch (e) {}
             applyStateToUi();
         }
+
         initState();
+        pollMessage();
+        setInterval(pollState,   2000);
+        setInterval(pollMessage, 3000);
     </script>
 </body>
 </html>
