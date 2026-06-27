@@ -7,10 +7,6 @@
     <style>
         :root {
             --bg-color: #0d0f14;
-            --lamp-color: #B8D4F0;
-            --base-color: #C0392B;
-            --body-color: #7EB5D6;
-            --brightness: 40%;
         }
 
         * { box-sizing: border-box; }
@@ -53,14 +49,12 @@
             overflow: hidden;
         }
 
-        /* 왼쪽 컨트롤 패널 */
         .control-panel {
             width: 45%;
             padding: 32px;
             border-right: 1px solid #1e2230;
         }
 
-        /* halo 메시지 박스 */
         .halo-message-box {
             background: linear-gradient(135deg, #0d1520, #131a28);
             border: 1px solid #2a3a52;
@@ -74,10 +68,7 @@
             gap: 10px;
         }
 
-        .halo-message-icon {
-            font-size: 18px;
-            flex-shrink: 0;
-        }
+        .halo-message-icon { font-size: 18px; flex-shrink: 0; }
 
         .halo-message-text {
             font-size: 14px;
@@ -91,9 +82,7 @@
             font-style: normal;
         }
 
-        .form-group {
-            margin-bottom: 22px;
-        }
+        .form-group { margin-bottom: 22px; }
 
         .form-group label {
             display: block;
@@ -104,7 +93,6 @@
             text-transform: uppercase;
         }
 
-        /* 전원 / 충전 스위치 행 */
         .power-row {
             display: flex;
             align-items: center;
@@ -133,26 +121,18 @@
         }
         input:checked + .slider { background-color: #7EB5D6; }
         input:checked + .slider:before { transform: translateX(26px); }
-
-        /* 충전 스위치 — 켜지면 녹색 */
         .switch-charging input:checked + .slider { background-color: #22c55e; }
 
-        /* 배터리 */
         .battery-display {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             background: #0d1016;
             padding: 14px 16px;
             border-radius: 8px;
             border: 1px solid #1e2230;
         }
 
-        .battery-left {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
+        .battery-left { display: flex; flex-direction: column; gap: 4px; }
 
         .battery-gauge {
             font-size: 22px;
@@ -160,33 +140,24 @@
             color: #7EB5D6;
             font-variant-numeric: tabular-nums;
         }
-
         .battery-gauge.low { color: #ef4444; }
 
-        .charge-label {
-            font-size: 11px;
-            color: #4a5568;
-            letter-spacing: 0.05em;
-        }
-
+        .charge-label { font-size: 11px; color: #4a5568; letter-spacing: 0.05em; }
         .charge-label.charging { color: #22c55e; }
         .charge-label.discharging { color: #6b7280; }
 
-        /* 밝기 슬라이더 */
         .range-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 10px;
         }
-
         .range-label { font-size: 12px; color: #7a8499; text-transform: uppercase; letter-spacing: 0.08em; }
         .range-val { font-size: 14px; font-weight: 700; color: #7EB5D6; }
 
         input[type="range"] {
             -webkit-appearance: none;
-            width: 100%;
-            height: 4px;
+            width: 100%; height: 4px;
             background: #1e2230;
             border-radius: 2px;
             outline: none;
@@ -200,7 +171,6 @@
             box-shadow: 0 0 6px rgba(126,181,214,0.5);
         }
 
-        /* 색온도 고정 표시 */
         .fixed-badge {
             display: inline-flex;
             align-items: center;
@@ -212,10 +182,9 @@
             font-size: 13px;
             color: #7EB5D6;
         }
-
         .fixed-badge span { color: #4a5568; font-size: 11px; }
 
-        /* 오른쪽 비주얼 패널 */
+        /* 비주얼 패널 */
         .visual-panel {
             width: 55%;
             background-color: var(--bg-color);
@@ -224,13 +193,68 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            padding: 30px;
+            padding: 30px 20px;
             transition: background-color 0.5s;
+            overflow: hidden;
         }
 
-        .visual-panel svg {
+        /*
+         * lamp-wrapper: PNG 비율(1503:2244 ≈ 2:3) 유지
+         * 패널 높이(480px 기준)에 맞추면 width ≈ 480×(1503/2244) ≈ 321px
+         * max-width로 패널 내에서 넘치지 않도록 제한
+         */
+        .lamp-wrapper {
             position: relative;
+            width: 72%;          /* 비주얼 패널 폭의 72% */
+            max-width: 310px;
+            aspect-ratio: 1503 / 2244;  /* PNG 원본 비율 */
+        }
+
+        /* 뒤 글로우 (PNG 아래) */
+        .lamp-glow {
+            position: absolute;
+            inset: -30% -40% auto;    /* 상단 중심으로 퍼짐 */
+            height: 70%;
+            border-radius: 50%;
+            background: radial-gradient(
+                ellipse 70% 60% at 50% 40%,
+                rgba(255, 252, 210, 0.60) 0%,
+                rgba(255, 235, 140, 0.25) 35%,
+                rgba(255, 210,  80, 0.06) 65%,
+                transparent 100%
+            );
+            transition: opacity 0.4s;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* halo PNG */
+        .lamp-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             z-index: 1;
+            transition: filter 0.4s, opacity 0.4s;
+        }
+
+        /* 앞 글로우 오버레이 (mix-blend-mode: screen) */
+        .lamp-glow-overlay {
+            position: absolute;
+            inset: -20% -30% auto;
+            height: 60%;
+            border-radius: 50%;
+            background: radial-gradient(
+                ellipse 65% 55% at 50% 35%,
+                rgba(255, 252, 220, 0.45) 0%,
+                rgba(255, 235, 150, 0.12) 45%,
+                transparent 70%
+            );
+            mix-blend-mode: screen;
+            transition: opacity 0.4s;
+            pointer-events: none;
+            z-index: 2;
         }
     </style>
 </head>
@@ -244,13 +268,11 @@
         <!-- 컨트롤 패널 -->
         <div class="control-panel">
 
-            <!-- halo 메시지 박스 -->
             <div class="halo-message-box">
                 <div class="halo-message-icon">🌙</div>
                 <div class="halo-message-text empty" id="halo-message">halo의 메시지를 기다리는 중...</div>
             </div>
 
-            <!-- 전원 -->
             <div class="form-group">
                 <div class="power-row">
                     <label style="margin:0;">전원 ON / OFF</label>
@@ -261,7 +283,6 @@
                 </div>
             </div>
 
-            <!-- 충전 (신규) -->
             <div class="form-group">
                 <div class="power-row">
                     <label style="margin:0;">충전 ON / OFF</label>
@@ -272,7 +293,6 @@
                 </div>
             </div>
 
-            <!-- 배터리 -->
             <div class="form-group">
                 <label>배터리 잔량</label>
                 <div class="battery-display">
@@ -283,7 +303,6 @@
                 </div>
             </div>
 
-            <!-- 밝기 -->
             <div class="form-group">
                 <div class="range-row">
                     <span class="range-label">밝기</span>
@@ -292,7 +311,6 @@
                 <input type="range" id="brightness" min="0" max="100" value="40">
             </div>
 
-            <!-- 색온도 (고정) -->
             <div class="form-group">
                 <label>색온도 (고정)</label>
                 <div class="fixed-badge">
@@ -304,82 +322,17 @@
 
         <!-- 비주얼 패널 -->
         <div class="visual-panel" id="visual-panel">
-            <svg id="halo-svg" width="100%" height="480" viewBox="0 0 680 480" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <radialGradient id="haloGlow" gradientUnits="userSpaceOnUse"
-                                    cx="340" cy="203" r="300">
-                        <stop id="gStop0" offset="0%"   stop-color="#fffef5" stop-opacity="0.85" />
-                        <stop id="gStop1" offset="22%"  stop-color="#fff8dc" stop-opacity="0.52" />
-                        <stop id="gStop2" offset="48%"  stop-color="#ffe89a" stop-opacity="0.20" />
-                        <stop id="gStop3" offset="72%"  stop-color="#ffe89a" stop-opacity="0.06" />
-                        <stop id="gStop4" offset="100%" stop-color="#ffe89a" stop-opacity="0" />
-                    </radialGradient>
-                    <linearGradient id="lampGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%"   stop-color="#ddd0a0"/>
-                        <stop offset="22%"  stop-color="#fffdf2"/>
-                        <stop offset="55%"  stop-color="#ffffff"/>
-                        <stop offset="78%"  stop-color="#fffdf2"/>
-                        <stop offset="100%" stop-color="#ddd0a0"/>
-                    </linearGradient>
-                    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%"   stop-color="#3d7a9a"/>
-                        <stop offset="28%"  stop-color="#7EB5D6"/>
-                        <stop offset="65%"  stop-color="#9fcfe6"/>
-                        <stop offset="100%" stop-color="#3d7a9a"/>
-                    </linearGradient>
-                    <linearGradient id="baseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%"   stop-color="#6a0f08"/>
-                        <stop offset="25%"  stop-color="#C0392B"/>
-                        <stop offset="62%"  stop-color="#d9534f"/>
-                        <stop offset="100%" stop-color="#6a0f08"/>
-                    </linearGradient>
-                    <linearGradient id="baseShadow" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%"   stop-color="#000" stop-opacity="0"/>
-                        <stop offset="100%" stop-color="#000" stop-opacity="0.28"/>
-                    </linearGradient>
-                </defs>
-
-                <circle id="glowEllipse" cx="340" cy="203" r="300" fill="url(#haloGlow)" />
-
-                <rect id="diffuser" x="309" y="20" width="62" height="188" rx="4"
-                      fill="url(#lampGrad)" fill-opacity="0.97" />
-                <rect id="lightCore" x="317" y="30" width="12" height="172" rx="3"
-                      fill="#fff" fill-opacity="0.35" />
-                <rect x="351" y="30" width="6" height="172" rx="2"
-                      fill="#fff" fill-opacity="0.15" />
-                <ellipse cx="340" cy="208" rx="31" ry="5"
-                         fill="#c8a020" fill-opacity="0.20" />
-
-                <path id="bodyPath"
-                      d="M 309,208 L 254,349 L 426,349 L 371,208 Z"
-                      fill="url(#bodyGrad)" />
-                <path d="M 309,208 L 268,320 L 284,320 L 321,214 Z"
-                      fill="#fff" fill-opacity="0.07" />
-                <line x1="340" y1="215" x2="340" y2="343"
-                      stroke="#fff" stroke-opacity="0.10" stroke-width="1.5" />
-                <line x1="254" y1="349" x2="426" y2="349"
-                      stroke="#2d6a8a" stroke-width="1" />
-
-                <rect id="basePath" x="309" y="349" width="62" height="86" rx="3"
-                      fill="url(#baseGrad)" />
-                <rect x="309" y="349" width="62" height="86" rx="3"
-                      fill="url(#baseShadow)" />
-                <rect x="309" y="349" width="62" height="8" rx="3"
-                      fill="#fff" fill-opacity="0.12" />
-                <rect x="317" y="353" width="10" height="78"
-                      fill="#fff" fill-opacity="0.09" rx="2" />
-
-                <ellipse cx="340" cy="438" rx="31" ry="6"
-                         fill="#000" fill-opacity="0.20" />
-            </svg>
+            <div class="lamp-wrapper">
+                <div class="lamp-glow"         id="lamp-glow"></div>
+                <img  class="lamp-img"          id="lamp-img" src="halo.png" alt="halo lamp">
+                <div class="lamp-glow-overlay"  id="lamp-glow-overlay"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        // ── 1. Worker URL 하드코딩 (폴링 버튼 제거) ─────────────
         const MCP_WORKER_URL = "https://halo.typica-918.workers.dev";
 
-        // ── 2. 상태 초기화 ────────────────────────────────────────
         let state = {
             power: true,
             battery: 80.0,
@@ -388,20 +341,18 @@
             uptimeMinutes: 0,
         };
 
-        // ── 3. DOM 캐시 ──────────────────────────────────────────
-        const elPower       = document.getElementById('power');
-        const elCharging    = document.getElementById('charging');
-        const elBattery     = document.getElementById('battery-gauge');
-        const elChargeLabel = document.getElementById('charge-label');
-        const elBrightness  = document.getElementById('brightness');
-        const elBrightVal   = document.getElementById('brightness-val');
-        const elVisualPanel = document.getElementById('visual-panel');
-        const elHaloMsg     = document.getElementById('halo-message');
-        const elGlow        = document.getElementById('glowEllipse');
-        const elDiffuser    = document.getElementById('diffuser');
-        const elLightCore   = document.getElementById('lightCore');
+        const elPower            = document.getElementById('power');
+        const elCharging         = document.getElementById('charging');
+        const elBattery          = document.getElementById('battery-gauge');
+        const elChargeLabel      = document.getElementById('charge-label');
+        const elBrightness       = document.getElementById('brightness');
+        const elBrightVal        = document.getElementById('brightness-val');
+        const elVisualPanel      = document.getElementById('visual-panel');
+        const elHaloMsg          = document.getElementById('halo-message');
+        const elLampImg          = document.getElementById('lamp-img');
+        const elLampGlow         = document.getElementById('lamp-glow');
+        const elLampGlowOverlay  = document.getElementById('lamp-glow-overlay');
 
-        // ── 4. 비주얼 렌더링 ─────────────────────────────────────
         function updateVisuals() {
             elBattery.textContent = state.battery.toFixed(1) + '%';
             elBattery.classList.toggle('low', state.battery <= 20);
@@ -415,27 +366,28 @@
             }
 
             if (!state.power || state.battery <= 0) {
-                elGlow.style.opacity = '0';
-                elDiffuser.setAttribute('fill-opacity', '0.05');
-                elLightCore.setAttribute('fill-opacity', '0');
+                elLampImg.style.filter   = 'brightness(0.15) saturate(0.2)';
+                elLampImg.style.opacity  = '0.5';
+                elLampGlow.style.opacity         = '0';
+                elLampGlowOverlay.style.opacity  = '0';
                 elVisualPanel.style.backgroundColor = '#080a0e';
                 return;
             }
 
             const b = state.brightness / 100;
-            elGlow.style.opacity = Math.max(0.05, b * 0.95);
-            elDiffuser.setAttribute('fill-opacity', (0.1 + b * 0.35).toFixed(2));
-            elLightCore.setAttribute('fill-opacity', (0.2 + b * 0.65).toFixed(2));
 
-            document.getElementById('gStop1').setAttribute('offset', `${5  + b * 15}%`);
-            document.getElementById('gStop2').setAttribute('offset', `${10 + b * 30}%`);
-            document.getElementById('gStop3').setAttribute('offset', `${20 + b * 45}%`);
-            document.getElementById('gStop4').setAttribute('offset', `${35 + b * 65}%`);
+            // 이미지 밝기: 밝기 0% → 0.25, 100% → 1.15
+            const imgBrightness = 0.25 + b * 0.90;
+            elLampImg.style.filter  = `brightness(${imgBrightness.toFixed(2)})`;
+            elLampImg.style.opacity = (0.55 + b * 0.45).toFixed(2);
 
-            elVisualPanel.style.backgroundColor = `rgba(13,15,20,${1 - b * 0.15})`;
+            elLampGlow.style.opacity        = (b * 0.88).toFixed(2);
+            elLampGlowOverlay.style.opacity = (b * 0.72).toFixed(2);
+
+            elVisualPanel.style.backgroundColor =
+                `rgba(13,15,20,${(1 - b * 0.12).toFixed(2)})`;
         }
 
-        // ── 5. 서버에 상태 저장 (가드 조건 제거) ────────────────
         let lastStateStr = "";
 
         async function pushStateToServer() {
@@ -447,9 +399,7 @@
                     body,
                 });
                 lastStateStr = body;
-            } catch (err) {
-                console.error('상태 저장 오류:', err);
-            }
+            } catch (err) { console.error('상태 저장 오류:', err); }
         }
 
         async function pushHaloMessage(message) {
@@ -460,12 +410,9 @@
                     body: JSON.stringify({ message }),
                 });
                 renderHaloMessage(message);
-            } catch (err) {
-                console.error('발화 저장 오류:', err);
-            }
+            } catch (err) { console.error('발화 저장 오류:', err); }
         }
 
-        // ── 6. UI → 서버 이벤트 핸들러 ──────────────────────────
         elPower.addEventListener('change', (e) => {
             state.power = e.target.checked;
             if (!state.power) pushHaloMessage('저 켜주세요, 심심해요.');
@@ -485,14 +432,8 @@
             updateVisuals();
         });
 
-        elBrightness.addEventListener('change', (e) => {
-            state.brightness = parseInt(e.target.value);
-            elBrightVal.textContent = state.brightness + '%';
-            updateVisuals();
-            pushStateToServer();
-        });
+        elBrightness.addEventListener('change', () => pushStateToServer());
 
-        // ── 7. halo 메시지 표시 ───────────────────────────────────
         function renderHaloMessage(msg) {
             if (msg) {
                 elHaloMsg.textContent = `" ${msg} "`;
@@ -503,16 +444,14 @@
             }
         }
 
-        // ── 8. 서버 → UI 상태 반영 ───────────────────────────────
         function applyStateToUi() {
-            elPower.checked      = state.power;
-            elCharging.checked   = state.charging;
-            elBrightness.value   = state.brightness;
+            elPower.checked    = state.power;
+            elCharging.checked = state.charging;
+            elBrightness.value = state.brightness;
             elBrightVal.textContent = state.brightness + '%';
             updateVisuals();
         }
 
-        // ── 9. MCP 폴링 (자동 시작, 가드 없음) ──────────────────
         async function pollState() {
             try {
                 const res = await fetch(`${MCP_WORKER_URL}/state`);
@@ -520,15 +459,13 @@
                 const text = await res.text();
                 if (text === '{}' || text === lastStateStr) return;
                 lastStateStr = text;
-                const serverState = JSON.parse(text);
-                if (typeof serverState.power      === 'boolean') state.power      = serverState.power;
-                if (typeof serverState.brightness === 'number')  state.brightness = serverState.brightness;
-                if (typeof serverState.charging   === 'boolean') state.charging   = serverState.charging;
-                if (typeof serverState.battery    === 'number')  state.battery    = serverState.battery;
+                const s = JSON.parse(text);
+                if (typeof s.power      === 'boolean') state.power      = s.power;
+                if (typeof s.brightness === 'number')  state.brightness = s.brightness;
+                if (typeof s.charging   === 'boolean') state.charging   = s.charging;
+                if (typeof s.battery    === 'number')  state.battery    = s.battery;
                 applyStateToUi();
-            } catch (err) {
-                // 연결 실패 무시
-            }
+            } catch (err) {}
         }
 
         async function pollMessage() {
@@ -540,9 +477,9 @@
             } catch (err) {}
         }
 
-        // ── 10. 배터리 소모 시뮬레이터 (1초) ────────────────────
         let lowBatteryAlerted = false;
         let longUptimeAlerted = false;
+        let fullChargeAlerted = false;
 
         setInterval(() => {
             if (state.power && state.battery > 0 && !state.charging) {
@@ -568,23 +505,23 @@
                     state.power = false;
                     elPower.checked = false;
                 }
-
-                updateVisuals();
             }
 
             if (state.charging && state.battery < 100) {
                 state.battery = Math.min(100, state.battery + (2 / 60));
-                updateVisuals();
+                fullChargeAlerted = false;
             }
 
-            if (state.charging && state.battery >= 100) {
+            if (state.charging && state.battery >= 100 && !fullChargeAlerted) {
+                fullChargeAlerted = true;
                 state.battery = 100;
                 pushHaloMessage('배불러요. 이제 일할 수 있어요.');
                 pushStateToServer();
             }
+
+            updateVisuals();
         }, 1000);
 
-        // ── 11. 초기화 및 폴링 자동 시작 ─────────────────────────
         async function initState() {
             try {
                 const res = await fetch(`${MCP_WORKER_URL}/state`);
