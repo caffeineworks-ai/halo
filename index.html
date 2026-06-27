@@ -1670,7 +1670,7 @@ footer {
      SECTION: HALO MCP 가상기기 시뮬레이터
 ════════════════════════════════════════════════════════ -->
 <style>
-/* ── SIMULATOR SECTION ── */
+/* ── 시뮬레이터 섹션 래퍼 (index.html 시스템) ── */
 .sim-section {
   padding: var(--sec-pad);
   background: #ffffff;
@@ -1680,302 +1680,265 @@ footer {
   margin: 0 auto;
 }
 
-/* 시뮬레이터 컨테이너 */
-.sim-container {
-  display: flex;
-  width: 100%;
-  background: #13161e;
-  border-radius: 4px;
-  overflow: hidden;
+/* ── halo.html 원본 스타일 (네임스페이스: halo-sim) ── */
+.halo-sim-container {
+    display: flex;
+    max-width: 100%;
+    background: #13161e;
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+    overflow: hidden;
+    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+    color: #e0e0e0;
 }
-
-/* 왼쪽 컨트롤 패널 */
-.sim-control {
-  width: 42%;
-  padding: 32px;
-  border-right: 1px solid #1e2230;
-  flex-shrink: 0;
+.halo-sim-control {
+    width: 45%;
+    padding: 32px;
+    border-right: 1px solid #1e2230;
+    box-sizing: border-box;
 }
-
-/* halo 메시지 박스 */
-.sim-msg-box {
-  background: linear-gradient(135deg, #0d1520, #131a28);
-  border: 1px solid #2a3a52;
-  border-left: 3px solid #7EB5D6;
-  border-radius: 2px;
-  padding: 14px 16px;
-  margin-bottom: 24px;
-  min-height: 52px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.halo-sim-message-box {
+    background: linear-gradient(135deg, #0d1520, #131a28);
+    border: 1px solid #2a3a52;
+    border-left: 3px solid #7EB5D6;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 24px;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
-.sim-msg-icon { font-size: 16px; flex-shrink: 0; }
-.sim-msg-text {
-  font-size: 12px;
-  color: #B8D4F0;
-  line-height: 1.6;
-  font-style: italic;
-  letter-spacing: 0.01em;
+.halo-sim-message-icon { font-size: 18px; flex-shrink: 0; }
+.halo-sim-message-text {
+    font-size: 14px;
+    color: #B8D4F0;
+    line-height: 1.5;
+    font-style: italic;
 }
-.sim-msg-text.empty {
-  color: #4a5568;
-  font-style: normal;
+.halo-sim-message-text.empty {
+    color: #4a5568;
+    font-style: normal;
 }
-
-/* 컨트롤 항목 */
-.sim-form-group { margin-bottom: 20px; }
-
-.sim-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.halo-sim-form-group { margin-bottom: 22px; }
+.halo-sim-form-group label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 10px;
+    color: #7a8499;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
-
-.sim-label {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #6b7280;
-  margin-bottom: 10px;
-  display: block;
+.halo-sim-power-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
-
-/* 스위치 */
-.sim-switch {
-  position: relative;
-  display: inline-block;
-  width: 52px;
-  height: 28px;
+.halo-sim-switch {
+    position: relative;
+    display: inline-block;
+    width: 56px;
+    height: 30px;
 }
-.sim-switch input { opacity: 0; width: 0; height: 0; }
-.sim-slider {
-  position: absolute; cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #2a2e3a;
-  transition: .3s; border-radius: 28px;
+.halo-sim-switch input { opacity: 0; width: 0; height: 0; }
+.halo-sim-slider {
+    position: absolute; cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #2a2e3a;
+    transition: .4s; border-radius: 30px;
 }
-.sim-slider:before {
-  position: absolute; content: "";
-  height: 20px; width: 20px;
-  left: 4px; bottom: 4px;
-  background-color: #fff;
-  transition: .3s; border-radius: 50%;
+.halo-sim-slider:before {
+    position: absolute; content: "";
+    height: 22px; width: 22px;
+    left: 4px; bottom: 4px;
+    background-color: #fff;
+    transition: .4s; border-radius: 50%;
 }
-.sim-switch input:checked + .sim-slider { background-color: #7EB5D6; }
-.sim-switch input:checked + .sim-slider:before { transform: translateX(24px); }
-.sim-switch-charge input:checked + .sim-slider { background-color: #22c55e; }
-
-/* 배터리 */
-.sim-battery {
-  background: #0d1016;
-  padding: 12px 16px;
-  border-radius: 2px;
-  border: 1px solid #1e2230;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+.halo-sim-switch input:checked + .halo-sim-slider { background-color: #7EB5D6; }
+.halo-sim-switch input:checked + .halo-sim-slider:before { transform: translateX(26px); }
+.halo-sim-switch-charging input:checked + .halo-sim-slider { background-color: #22c55e; }
+.halo-sim-battery-display {
+    display: flex;
+    align-items: center;
+    background: #0d1016;
+    padding: 14px 16px;
+    border-radius: 8px;
+    border: 1px solid #1e2230;
 }
-.sim-battery-val {
-  font-size: 20px;
-  font-weight: 700;
-  color: #7EB5D6;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+.halo-sim-battery-left { display: flex; flex-direction: column; gap: 4px; }
+.halo-sim-battery-gauge {
+    font-size: 22px;
+    font-weight: 700;
+    color: #7EB5D6;
+    font-variant-numeric: tabular-nums;
 }
-.sim-battery-val.low { color: #ef4444; }
-.sim-charge-lbl {
-  font-size: 10px;
-  color: #4a5568;
-  letter-spacing: 0.04em;
+.halo-sim-battery-gauge.low { color: #ef4444; }
+.halo-sim-charge-label { font-size: 11px; color: #4a5568; letter-spacing: 0.05em; }
+.halo-sim-charge-label.charging { color: #22c55e; }
+.halo-sim-charge-label.discharging { color: #6b7280; }
+.halo-sim-range-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
 }
-.sim-charge-lbl.charging { color: #22c55e; }
-.sim-charge-lbl.discharging { color: #6b7280; }
-
-/* 슬라이더 */
-.sim-range-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 8px;
+.halo-sim-range-label { font-size: 12px; color: #7a8499; text-transform: uppercase; letter-spacing: 0.08em; }
+.halo-sim-range-val { font-size: 14px; font-weight: 700; color: #7EB5D6; }
+.halo-sim-range {
+    -webkit-appearance: none;
+    width: 100%; height: 4px;
+    background: #1e2230;
+    border-radius: 2px;
+    outline: none;
 }
-.sim-range-val {
-  font-size: 12px;
-  font-weight: 700;
-  color: #7EB5D6;
+.halo-sim-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #7EB5D6;
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(126,181,214,0.5);
 }
-.sim-range {
-  -webkit-appearance: none;
-  width: 100%; height: 3px;
-  background: #1e2230;
-  border-radius: 2px;
-  outline: none;
+.halo-sim-fixed-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #0d1016;
+    border: 1px solid #1e2230;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #7EB5D6;
 }
-.sim-range::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  background: #7EB5D6;
-  cursor: pointer;
-  box-shadow: 0 0 6px rgba(126,181,214,0.4);
+.halo-sim-fixed-badge span { color: #4a5568; font-size: 11px; }
+.halo-sim-visual {
+    width: 55%;
+    background-color: #0d0f14;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 30px 20px;
+    box-sizing: border-box;
+    transition: background-color 0.5s;
+    overflow: hidden;
 }
-
-/* 색온도 고정 뱃지 */
-.sim-fixed-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #0d1016;
-  border: 1px solid #1e2230;
-  border-radius: 2px;
-  padding: 10px 14px;
-  font-size: 11px;
-  color: #7EB5D6;
-  letter-spacing: 0.01em;
+.halo-sim-lamp-wrapper {
+    position: relative;
+    width: 72%;
+    max-width: 310px;
+    aspect-ratio: 1503 / 2244;
 }
-.sim-fixed-badge span { color: #4a5568; font-size: 10px; }
-
-/* 오른쪽 비주얼 패널 */
-.sim-visual {
-  flex: 1;
-  background: #0d0f14;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  padding: 30px 20px;
-  transition: background-color 0.5s;
-  overflow: hidden;
-  min-height: 480px;
+.halo-sim-lamp-glow {
+    position: absolute;
+    left: 50%;
+    top: calc(135px - 35%);
+    transform: translateX(-50%);
+    width: 140%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle at 50% 50%,
+        rgba(255,252,210,0.60) 0%,
+        rgba(255,235,140,0.25) 35%,
+        rgba(255,210,80,0.06) 65%,
+        transparent 100%
+    );
+    transition: opacity 0.4s;
+    pointer-events: none;
+    z-index: 0;
 }
-
-/* 램프 래퍼: PNG 비율(1503:2244 ≈ 2:3) 유지 */
-.sim-lamp-wrap {
-  position: relative;
-  width: 58%;
-  max-width: 260px;
-  aspect-ratio: 1503 / 2244;
+.halo-sim-lamp-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+    transition: filter 0.4s, opacity 0.4s;
 }
-
-/* 뒤 글로우 */
-.sim-glow {
-  position: absolute;
-  left: 50%;
-  top: calc(215px - 35%);
-  transform: translateX(-50%);
-  width: 140%;
-  aspect-ratio: 1 / 1;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(255,252,210,0.60) 0%,
-    rgba(255,235,140,0.25) 35%,
-    rgba(255,210,80,0.06) 65%,
-    transparent 100%
-  );
-  transition: opacity 0.4s;
-  pointer-events: none;
-  z-index: 0;
+.halo-sim-lamp-glow-overlay {
+    position: absolute;
+    left: 50%;
+    top: calc(135px - 30%);
+    transform: translateX(-50%);
+    width: 120%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle at 50% 50%,
+        rgba(255,252,220,0.45) 0%,
+        rgba(255,235,150,0.12) 45%,
+        transparent 70%
+    );
+    mix-blend-mode: screen;
+    transition: opacity 0.4s;
+    pointer-events: none;
+    z-index: 2;
 }
-
-/* PNG 이미지 */
-.sim-lamp-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  z-index: 1;
-  transition: filter 0.4s, opacity 0.4s;
-}
-
-/* 앞 글로우 */
-.sim-glow-overlay {
-  position: absolute;
-  left: 50%;
-  top: calc(215px - 30%);
-  transform: translateX(-50%);
-  width: 120%;
-  aspect-ratio: 1 / 1;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(255,252,220,0.45) 0%,
-    rgba(255,235,150,0.12) 45%,
-    transparent 70%
-  );
-  mix-blend-mode: screen;
-  transition: opacity 0.4s;
-  pointer-events: none;
-  z-index: 2;
-}
-
 @media (max-width: 768px) {
-  .sim-container { flex-direction: column; }
-  .sim-control { width: 100%; border-right: none; border-bottom: 1px solid #1e2230; }
-  .sim-visual { min-height: 340px; }
+  .halo-sim-container { flex-direction: column; }
+  .halo-sim-control { width: 100%; border-right: none; border-bottom: 1px solid #1e2230; }
+  .halo-sim-visual { width: 100%; min-height: 340px; }
 }
 </style>
 
 <section class="sim-section">
   <div class="sim-inner">
     <span class="section-label">MCP Virtual Device</span>
-    <div class="sim-container">
+
+    <div class="halo-sim-container">
 
       <!-- 컨트롤 패널 -->
-      <div class="sim-control">
+      <div class="halo-sim-control">
 
-        <!-- halo 메시지 -->
-        <div class="sim-msg-box">
-          <div class="sim-msg-icon">🌙</div>
-          <div class="sim-msg-text empty" id="sim-halo-msg">halo의 메시지를 기다리는 중...</div>
+        <div class="halo-sim-message-box">
+          <div class="halo-sim-message-icon">🌙</div>
+          <div class="halo-sim-message-text empty" id="halo-message">halo의 메시지를 기다리는 중...</div>
         </div>
 
-        <!-- 전원 -->
-        <div class="sim-form-group">
-          <div class="sim-row">
-            <label class="sim-label" style="margin:0;">전원 ON / OFF</label>
-            <label class="sim-switch">
-              <input type="checkbox" id="sim-power" checked>
-              <span class="sim-slider"></span>
+        <div class="halo-sim-form-group">
+          <div class="halo-sim-power-row">
+            <label style="margin:0;">전원 ON / OFF</label>
+            <label class="halo-sim-switch">
+              <input type="checkbox" id="power" checked>
+              <span class="halo-sim-slider"></span>
             </label>
           </div>
         </div>
 
-        <!-- 충전 -->
-        <div class="sim-form-group">
-          <div class="sim-row">
-            <label class="sim-label" style="margin:0;">충전 ON / OFF</label>
-            <label class="sim-switch sim-switch-charge">
-              <input type="checkbox" id="sim-charging">
-              <span class="sim-slider"></span>
+        <div class="halo-sim-form-group">
+          <div class="halo-sim-power-row">
+            <label style="margin:0;">충전 ON / OFF</label>
+            <label class="halo-sim-switch halo-sim-switch-charging">
+              <input type="checkbox" id="charging">
+              <span class="halo-sim-slider"></span>
             </label>
           </div>
         </div>
 
-        <!-- 배터리 -->
-        <div class="sim-form-group">
-          <label class="sim-label">배터리 잔량</label>
-          <div class="sim-battery">
-            <span id="sim-battery-val" class="sim-battery-val">80.0%</span>
-            <span id="sim-charge-lbl" class="sim-charge-lbl discharging">방전중</span>
+        <div class="halo-sim-form-group">
+          <label>배터리 잔량</label>
+          <div class="halo-sim-battery-display">
+            <div class="halo-sim-battery-left">
+              <span id="battery-gauge" class="halo-sim-battery-gauge">80.0%</span>
+              <span id="charge-label" class="halo-sim-charge-label discharging">방전중</span>
+            </div>
           </div>
         </div>
 
-        <!-- 밝기 -->
-        <div class="sim-form-group">
-          <div class="sim-range-row">
-            <label class="sim-label" style="margin:0;">밝기</label>
-            <span id="sim-brightness-val" class="sim-range-val">40%</span>
+        <div class="halo-sim-form-group">
+          <div class="halo-sim-range-row">
+            <span class="halo-sim-range-label">밝기</span>
+            <span id="brightness-val" class="halo-sim-range-val">40%</span>
           </div>
-          <input type="range" class="sim-range" id="sim-brightness" min="0" max="100" value="40">
+          <input type="range" class="halo-sim-range" id="brightness" min="0" max="100" value="40">
         </div>
 
-        <!-- 색온도 고정 -->
-        <div class="sim-form-group">
-          <label class="sim-label">색온도 (고정)</label>
-          <div class="sim-fixed-badge">
+        <div class="halo-sim-form-group">
+          <label>색온도 (고정)</label>
+          <div class="halo-sim-fixed-badge">
             🌡️ 2700K — 전구색 (따뜻함) <span>변경 불가</span>
           </div>
         </div>
@@ -1983,11 +1946,11 @@ footer {
       </div>
 
       <!-- 비주얼 패널 -->
-      <div class="sim-visual" id="sim-visual">
-        <div class="sim-lamp-wrap">
-          <div class="sim-glow"         id="sim-glow"></div>
-          <img  class="sim-lamp-img"    id="sim-lamp-img" src="halo.png" alt="halo lamp">
-          <div class="sim-glow-overlay" id="sim-glow-overlay"></div>
+      <div class="halo-sim-visual" id="visual-panel">
+        <div class="halo-sim-lamp-wrapper">
+          <div class="halo-sim-lamp-glow"         id="lamp-glow"></div>
+          <img  class="halo-sim-lamp-img"          id="lamp-img" src="halo.png" alt="halo lamp">
+          <div class="halo-sim-lamp-glow-overlay"  id="lamp-glow-overlay"></div>
         </div>
       </div>
 
@@ -1997,174 +1960,213 @@ footer {
 
 <script>
 (function() {
-  var MCP_URL = "https://halo.typica-918.workers.dev";
+    const MCP_WORKER_URL = "https://halo.typica-918.workers.dev";
 
-  var state = { power: true, battery: 80.0, brightness: 40, charging: false, uptimeMinutes: 0 };
+    let state = {
+        power: true,
+        battery: 80.0,
+        brightness: 40,
+        charging: false,
+        uptimeMinutes: 0,
+    };
 
-  var elPower     = document.getElementById('sim-power');
-  var elCharging  = document.getElementById('sim-charging');
-  var elBatVal    = document.getElementById('sim-battery-val');
-  var elChargeLbl = document.getElementById('sim-charge-lbl');
-  var elBright    = document.getElementById('sim-brightness');
-  var elBrightVal = document.getElementById('sim-brightness-val');
-  var elVisual    = document.getElementById('sim-visual');
-  var elMsg       = document.getElementById('sim-halo-msg');
-  var elImg       = document.getElementById('sim-lamp-img');
-  var elGlow      = document.getElementById('sim-glow');
-  var elGlowOv    = document.getElementById('sim-glow-overlay');
+    const elPower           = document.getElementById('power');
+    const elCharging        = document.getElementById('charging');
+    const elBattery         = document.getElementById('battery-gauge');
+    const elChargeLabel     = document.getElementById('charge-label');
+    const elBrightness      = document.getElementById('brightness');
+    const elBrightVal       = document.getElementById('brightness-val');
+    const elVisualPanel     = document.getElementById('visual-panel');
+    const elHaloMsg         = document.getElementById('halo-message');
+    const elLampImg         = document.getElementById('lamp-img');
+    const elLampGlow        = document.getElementById('lamp-glow');
+    const elLampGlowOverlay = document.getElementById('lamp-glow-overlay');
 
-  function updateVisuals() {
-    elBatVal.textContent = state.battery.toFixed(1) + '%';
-    elBatVal.classList.toggle('low', state.battery <= 20);
+    function updateVisuals() {
+        elBattery.textContent = state.battery.toFixed(1) + '%';
+        elBattery.classList.toggle('low', state.battery <= 20);
 
-    if (state.charging) {
-      elChargeLbl.textContent = '충전중 ⚡';
-      elChargeLbl.className = 'sim-charge-lbl charging';
-    } else {
-      elChargeLbl.textContent = '방전중';
-      elChargeLbl.className = 'sim-charge-lbl discharging';
+        if (state.charging) {
+            elChargeLabel.textContent = '충전중 ⚡';
+            elChargeLabel.className = 'halo-sim-charge-label charging';
+        } else {
+            elChargeLabel.textContent = '방전중';
+            elChargeLabel.className = 'halo-sim-charge-label discharging';
+        }
+
+        if (!state.power || state.battery <= 0) {
+            elLampImg.style.filter  = 'brightness(0.15) saturate(0.2)';
+            elLampImg.style.opacity = '0.5';
+            elLampGlow.style.opacity        = '0';
+            elLampGlowOverlay.style.opacity = '0';
+            elVisualPanel.style.backgroundColor = '#080a0e';
+            return;
+        }
+
+        const b = state.brightness / 100;
+        const imgBrightness = 0.25 + b * 0.90;
+        elLampImg.style.filter  = `brightness(${imgBrightness.toFixed(2)})`;
+        elLampImg.style.opacity = (0.55 + b * 0.45).toFixed(2);
+        elLampGlow.style.opacity        = (b * 0.88).toFixed(2);
+        elLampGlowOverlay.style.opacity = (b * 0.72).toFixed(2);
+        elVisualPanel.style.backgroundColor = `rgba(13,15,20,${(1 - b * 0.12).toFixed(2)})`;
     }
 
-    if (!state.power || state.battery <= 0) {
-      elImg.style.filter   = 'brightness(0.15) saturate(0.2)';
-      elImg.style.opacity  = '0.5';
-      elGlow.style.opacity  = '0';
-      elGlowOv.style.opacity = '0';
-      elVisual.style.backgroundColor = '#080a0e';
-      return;
+    let lastStateStr = "";
+
+    async function pushStateToServer() {
+        try {
+            const body = JSON.stringify(state);
+            await fetch(`${MCP_WORKER_URL}/state`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body,
+            });
+            lastStateStr = body;
+        } catch (err) { console.error('상태 저장 오류:', err); }
     }
 
-    var b = state.brightness / 100;
-    elImg.style.filter  = 'brightness(' + (0.25 + b * 0.90).toFixed(2) + ')';
-    elImg.style.opacity = (0.55 + b * 0.45).toFixed(2);
-    elGlow.style.opacity  = (b * 0.88).toFixed(2);
-    elGlowOv.style.opacity = (b * 0.72).toFixed(2);
-    elVisual.style.backgroundColor = 'rgba(13,15,20,' + (1 - b * 0.12).toFixed(2) + ')';
-  }
-
-  var lastStateStr = "";
-
-  function pushState() {
-    try {
-      var body = JSON.stringify(state);
-      fetch(MCP_URL + '/state', { method:'POST', headers:{'Content-Type':'application/json'}, body: body });
-      lastStateStr = body;
-    } catch(e) {}
-  }
-
-  function pushMsg(msg) {
-    try {
-      fetch(MCP_URL + '/last-message', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({message: msg}) });
-      renderMsg(msg);
-    } catch(e) {}
-  }
-
-  function renderMsg(msg) {
-    if (msg) {
-      elMsg.textContent = '" ' + msg + ' "';
-      elMsg.classList.remove('empty');
-    } else {
-      elMsg.textContent = 'halo의 메시지를 기다리는 중...';
-      elMsg.classList.add('empty');
+    async function pushHaloMessage(message) {
+        try {
+            await fetch(`${MCP_WORKER_URL}/last-message`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message }),
+            });
+            renderHaloMessage(message);
+        } catch (err) { console.error('발화 저장 오류:', err); }
     }
-  }
 
-  function applyState() {
-    elPower.checked   = state.power;
-    elCharging.checked = state.charging;
-    elBright.value    = state.brightness;
-    elBrightVal.textContent = state.brightness + '%';
-    updateVisuals();
-  }
+    elPower.addEventListener('change', (e) => {
+        state.power = e.target.checked;
+        if (!state.power) pushHaloMessage('저 켜주세요, 심심해요.');
+        updateVisuals();
+        pushStateToServer();
+    });
 
-  elPower.addEventListener('change', function(e) {
-    state.power = e.target.checked;
-    if (!state.power) pushMsg('저 켜주세요, 심심해요.');
-    updateVisuals(); pushState();
-  });
+    elCharging.addEventListener('change', (e) => {
+        state.charging = e.target.checked;
+        updateVisuals();
+        pushStateToServer();
+    });
 
-  elCharging.addEventListener('change', function(e) {
-    state.charging = e.target.checked;
-    updateVisuals(); pushState();
-  });
+    elBrightness.addEventListener('input', (e) => {
+        state.brightness = parseInt(e.target.value);
+        elBrightVal.textContent = state.brightness + '%';
+        updateVisuals();
+    });
 
-  elBright.addEventListener('input', function(e) {
-    state.brightness = parseInt(e.target.value);
-    elBrightVal.textContent = state.brightness + '%';
-    updateVisuals();
-  });
+    elBrightness.addEventListener('change', () => pushStateToServer());
 
-  elBright.addEventListener('change', function() { pushState(); });
-
-  async function pollState() {
-    try {
-      var res = await fetch(MCP_URL + '/state');
-      if (!res.ok) return;
-      var text = await res.text();
-      if (text === '{}' || text === lastStateStr) return;
-      lastStateStr = text;
-      var s = JSON.parse(text);
-      if (typeof s.power      === 'boolean') state.power      = s.power;
-      if (typeof s.brightness === 'number')  state.brightness = s.brightness;
-      if (typeof s.charging   === 'boolean') state.charging   = s.charging;
-      if (typeof s.battery    === 'number')  state.battery    = s.battery;
-      applyState();
-    } catch(e) {}
-  }
-
-  async function pollMsg() {
-    try {
-      var res = await fetch(MCP_URL + '/last-message');
-      if (!res.ok) return;
-      var data = await res.json();
-      renderMsg(data.message);
-    } catch(e) {}
-  }
-
-  var lowBatAlert = false, uptimeAlert = false, fullChargeAlert = false;
-
-  setInterval(function() {
-    if (state.power && state.battery > 0 && !state.charging) {
-      var loss = (2/60) * (state.brightness/100);
-      state.battery = Math.max(0, state.battery - loss);
-      state.uptimeMinutes = parseFloat((state.uptimeMinutes + 1/60).toFixed(4));
-      if (state.battery <= 20 && !lowBatAlert) { lowBatAlert = true; pushMsg('배고파요, 충전해주세요.'); }
-      if (state.battery > 20) lowBatAlert = false;
-      if (state.uptimeMinutes >= 360 && !uptimeAlert) {
-        uptimeAlert = true; state.power = false; elPower.checked = false;
-        pushMsg('저 좀 쉬어도 될까요?'); pushState();
-      }
-      if (state.battery === 0) { state.power = false; elPower.checked = false; }
+    function renderHaloMessage(msg) {
+        if (msg) {
+            elHaloMsg.textContent = `" ${msg} "`;
+            elHaloMsg.classList.remove('empty');
+        } else {
+            elHaloMsg.textContent = 'halo의 메시지를 기다리는 중...';
+            elHaloMsg.classList.add('empty');
+        }
     }
-    if (state.charging && state.battery < 100) { state.battery = Math.min(100, state.battery + 2/60); fullChargeAlert = false; }
-    if (state.charging && state.battery >= 100 && !fullChargeAlert) {
-      fullChargeAlert = true; state.battery = 100;
-      pushMsg('배불러요. 이제 일할 수 있어요.'); pushState();
+
+    function applyStateToUi() {
+        elPower.checked    = state.power;
+        elCharging.checked = state.charging;
+        elBrightness.value = state.brightness;
+        elBrightVal.textContent = state.brightness + '%';
+        updateVisuals();
     }
-    updateVisuals();
-  }, 1000);
 
-  async function initState() {
-    try {
-      var res = await fetch(MCP_URL + '/state');
-      if (!res.ok) { applyState(); return; }
-      var text = await res.text();
-      if (text && text !== '{}') {
-        lastStateStr = text;
-        var s = JSON.parse(text);
-        if (typeof s.power      === 'boolean') state.power      = s.power;
-        if (typeof s.brightness === 'number')  state.brightness = s.brightness;
-        if (typeof s.charging   === 'boolean') state.charging   = s.charging;
-        if (typeof s.battery    === 'number')  state.battery    = s.battery;
-      }
-    } catch(e) {}
-    applyState();
-  }
+    async function pollState() {
+        try {
+            const res = await fetch(`${MCP_WORKER_URL}/state`);
+            if (!res.ok) return;
+            const text = await res.text();
+            if (text === '{}' || text === lastStateStr) return;
+            lastStateStr = text;
+            const s = JSON.parse(text);
+            if (typeof s.power      === 'boolean') state.power      = s.power;
+            if (typeof s.brightness === 'number')  state.brightness = s.brightness;
+            if (typeof s.charging   === 'boolean') state.charging   = s.charging;
+            if (typeof s.battery    === 'number')  state.battery    = s.battery;
+            applyStateToUi();
+        } catch (err) {}
+    }
 
-  initState();
-  pollMsg();
-  setInterval(pollState, 2000);
-  setInterval(pollMsg, 3000);
+    async function pollMessage() {
+        try {
+            const res = await fetch(`${MCP_WORKER_URL}/last-message`);
+            if (!res.ok) return;
+            const data = await res.json();
+            renderHaloMessage(data.message);
+        } catch (err) {}
+    }
+
+    let lowBatteryAlerted = false;
+    let longUptimeAlerted = false;
+    let fullChargeAlerted = false;
+
+    setInterval(() => {
+        if (state.power && state.battery > 0 && !state.charging) {
+            const loss = (2 / 60) * (state.brightness / 100);
+            state.battery = Math.max(0, state.battery - loss);
+            state.uptimeMinutes = parseFloat((state.uptimeMinutes + 1/60).toFixed(4));
+
+            if (state.battery <= 20 && !lowBatteryAlerted) {
+                lowBatteryAlerted = true;
+                pushHaloMessage('배고파요, 충전해주세요.');
+            }
+            if (state.battery > 20) lowBatteryAlerted = false;
+
+            if (state.uptimeMinutes >= 360 && !longUptimeAlerted) {
+                longUptimeAlerted = true;
+                state.power = false;
+                elPower.checked = false;
+                pushHaloMessage('저 좀 쉬어도 될까요?');
+                pushStateToServer();
+            }
+
+            if (state.battery === 0) {
+                state.power = false;
+                elPower.checked = false;
+            }
+        }
+
+        if (state.charging && state.battery < 100) {
+            state.battery = Math.min(100, state.battery + (2 / 60));
+            fullChargeAlerted = false;
+        }
+
+        if (state.charging && state.battery >= 100 && !fullChargeAlerted) {
+            fullChargeAlerted = true;
+            state.battery = 100;
+            pushHaloMessage('배불러요. 이제 일할 수 있어요.');
+            pushStateToServer();
+        }
+
+        updateVisuals();
+    }, 1000);
+
+    async function initState() {
+        try {
+            const res = await fetch(`${MCP_WORKER_URL}/state`);
+            if (!res.ok) { applyStateToUi(); return; }
+            const text = await res.text();
+            if (text && text !== '{}') {
+                lastStateStr = text;
+                const s = JSON.parse(text);
+                if (typeof s.power      === 'boolean') state.power      = s.power;
+                if (typeof s.brightness === 'number')  state.brightness = s.brightness;
+                if (typeof s.charging   === 'boolean') state.charging   = s.charging;
+                if (typeof s.battery    === 'number')  state.battery    = s.battery;
+            }
+        } catch (e) {}
+        applyStateToUi();
+    }
+
+    initState();
+    pollMessage();
+    setInterval(pollState,   2000);
+    setInterval(pollMessage, 3000);
 })();
 </script>
 
